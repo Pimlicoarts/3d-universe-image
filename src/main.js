@@ -326,7 +326,7 @@ window.addEventListener('click', (event) => {
   if (intersects.length > 0) {
     const item = intersects[0].object.userData
 
-    showGallery(item.category)
+    showGallery(item.category, item.path)
   }
 })
 
@@ -334,7 +334,7 @@ window.addEventListener('click', (event) => {
 // GALLERY
 // ======================================================
 
-function showGallery(category) {
+function showGallery(category, selectedPath) {
   const old = document.getElementById('galleryOverlay')
 
   if (old) {
@@ -362,9 +362,14 @@ function showGallery(category) {
 
   const items = contentItems.filter((item) => item.category === category)
 
-  const cardsHTML =
-    items
-      .map((item) => {
+  function createCards(loopIndex) {
+    return items
+      .map((item, itemIndex) => {
+        const cardId =
+          loopIndex === 1 && item.path === selectedPath
+            ? 'selectedGalleryItem'
+            : ''
+
         const mediaHTML =
           item.type === 'video'
             ? `
@@ -383,7 +388,13 @@ function showGallery(category) {
             `
 
         return `
-          <article class="gallery-card">
+          <article
+            class="gallery-card"
+            ${cardId ? `id="${cardId}"` : ''}
+            data-path="${item.path}"
+            data-index="${itemIndex}"
+            data-loop="${loopIndex}"
+          >
 
             <div class="media-box">
               ${mediaHTML}
@@ -413,6 +424,7 @@ function showGallery(category) {
         `
       })
       .join('')
+  }
 
   overlay.innerHTML = `
     <button id="closeOverlay">
@@ -433,20 +445,85 @@ function showGallery(category) {
 
       </header>
 
-      <div class="gallery-list">
+      <div class="gallery-list" id="galleryList">
 
-        ${cardsHTML}
+        <div class="gallery-loop-set" id="gallerySetTop">
+          ${createCards(0)}
+        </div>
+
+        <div class="gallery-loop-set" id="gallerySetMiddle">
+          ${createCards(1)}
+        </div>
+
+        <div class="gallery-loop-set" id="gallerySetBottom">
+          ${createCards(2)}
+        </div>
 
       </div>
 
     </section>
   `
 
-  document
-    .getElementById('closeOverlay')
-    .addEventListener('click', () => {
-      overlay.remove()
-    })
+  const closeButton = document.getElementById('closeOverlay')
+
+  closeButton.addEventListener('click', () => {
+    overlay.remove()
+  })
+
+  const topSet = document.getElementById('gallerySetTop')
+  const middleSet = document.getElementById('gallerySetMiddle')
+  const bottomSet = document.getElementById('gallerySetBottom')
+  const selectedItem = document.getElementById('selectedGalleryItem')
+
+  let isAdjustingScroll = false
+
+  function getLoopHeight() {
+    return middleSet.offsetHeight + 100
+  }
+
+  function setupInitialScroll() {
+    const target = selectedItem || middleSet
+
+    const targetTop =
+      target.getBoundingClientRect().top -
+      overlay.getBoundingClientRect().top +
+      overlay.scrollTop
+
+    const offset = isMobile ? 90 : 120
+
+    overlay.scrollTop = Math.max(0, targetTop - offset)
+  }
+
+  function handleLoopScroll() {
+    if (isAdjustingScroll) return
+
+    const loopHeight = getLoopHeight()
+
+    if (loopHeight <= 0) return
+
+    const middleTop = middleSet.offsetTop
+    const bottomTop = bottomSet.offsetTop
+
+    if (overlay.scrollTop >= bottomTop) {
+      isAdjustingScroll = true
+      overlay.scrollTop = overlay.scrollTop - loopHeight
+      requestAnimationFrame(() => {
+        isAdjustingScroll = false
+      })
+    } else if (overlay.scrollTop < middleTop - 40) {
+      isAdjustingScroll = true
+      overlay.scrollTop = overlay.scrollTop + loopHeight
+      requestAnimationFrame(() => {
+        isAdjustingScroll = false
+      })
+    }
+  }
+
+  requestAnimationFrame(() => {
+    setupInitialScroll()
+
+    overlay.addEventListener('scroll', handleLoopScroll)
+  })
 }
 
 // ======================================================
@@ -538,6 +615,14 @@ function injectGalleryCSS() {
     }
 
     .gallery-list {
+      display: flex;
+
+      flex-direction: column;
+
+      gap: 100px;
+    }
+
+    .gallery-loop-set {
       display: flex;
 
       flex-direction: column;
@@ -680,6 +765,10 @@ function injectGalleryCSS() {
       }
 
       .gallery-list {
+        gap: 70px;
+      }
+
+      .gallery-loop-set {
         gap: 70px;
       }
 
