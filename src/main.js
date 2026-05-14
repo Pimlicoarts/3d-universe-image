@@ -35,6 +35,7 @@ const isMobile =
   /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
 
 const scene = new THREE.Scene()
+
 scene.background = new THREE.Color(0xffffff)
 
 const camera = new THREE.PerspectiveCamera(
@@ -683,12 +684,12 @@ function injectGalleryCSS() {
       left: 28px;
       bottom: 28px;
 
-      width: 72px;
+      width: 96px;
       height: auto;
 
       z-index: 9500;
 
-      opacity: 0.82;
+      opacity: 0.45;
 
       pointer-events: none;
 
@@ -951,9 +952,9 @@ function injectGalleryCSS() {
         left: 18px;
         bottom: 18px;
 
-        width: 52px;
+        width: 58px;
 
-        opacity: 0.78;
+        opacity: 0.45;
       }
 
       #topMenu {
