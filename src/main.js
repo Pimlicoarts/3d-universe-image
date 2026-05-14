@@ -63,10 +63,7 @@ document.body.style.background = 'white'
 
 document.body.appendChild(renderer.domElement)
 
-const controls = new OrbitControls(
-  camera,
-  renderer.domElement
-)
+const controls = new OrbitControls(camera, renderer.domElement)
 
 controls.enableDamping = true
 controls.dampingFactor = 0.04
@@ -81,9 +78,6 @@ const imageLoader = new THREE.TextureLoader()
 // ======================================================
 
 const contentItems = [
-
-  // VIDEO
-
   {
     type: 'video',
     path: '/videos/vid_01.MP4',
@@ -92,7 +86,6 @@ const contentItems = [
     caption: 'Moving image archive.',
     year: '2026'
   },
-
   {
     type: 'video',
     path: '/videos/vid_02.MP4',
@@ -101,7 +94,6 @@ const contentItems = [
     caption: 'Experimental visual sequence.',
     year: '2026'
   },
-
   {
     type: 'video',
     path: '/videos/vid_03.MP4',
@@ -110,7 +102,6 @@ const contentItems = [
     caption: 'Video fragment floating in digital space.',
     year: '2026'
   },
-
   {
     type: 'video',
     path: '/videos/vid_04.MP4',
@@ -119,7 +110,6 @@ const contentItems = [
     caption: 'Motion texture inside the PLX universe.',
     year: '2026'
   },
-
   {
     type: 'video',
     path: '/videos/vid_05.MP4',
@@ -129,8 +119,6 @@ const contentItems = [
     year: '2026'
   },
 
-  // PHYSICAL
-
   {
     type: 'image',
     path: '/physical/phy_01.jpg',
@@ -139,7 +127,6 @@ const contentItems = [
     caption: 'Ocean plastic transformed into physical sculpture.',
     year: '2026'
   },
-
   {
     type: 'image',
     path: '/physical/phy_02.jpg',
@@ -148,7 +135,6 @@ const contentItems = [
     caption: 'Material memories collected from the ocean.',
     year: '2026'
   },
-
   {
     type: 'image',
     path: '/physical/phy_03.jpg',
@@ -157,7 +143,6 @@ const contentItems = [
     caption: 'A physical work made from plastic material.',
     year: '2026'
   },
-
   {
     type: 'image',
     path: '/physical/phy_04.jpg',
@@ -166,7 +151,6 @@ const contentItems = [
     caption: 'Object archive from Pimlico Arts.',
     year: '2026'
   },
-
   {
     type: 'image',
     path: '/physical/phy_05.jpg',
@@ -176,8 +160,6 @@ const contentItems = [
     year: '2026'
   },
 
-  // IMAGE
-
   {
     type: 'image',
     path: '/images/img_01.jpg',
@@ -186,7 +168,6 @@ const contentItems = [
     caption: 'Ocean plastic transformed into digital structure.',
     year: '2026'
   },
-
   {
     type: 'image',
     path: '/images/img_02.jpg',
@@ -195,7 +176,6 @@ const contentItems = [
     caption: 'Memory fragments floating in digital space.',
     year: '2026'
   },
-
   {
     type: 'image',
     path: '/images/img_03.jpg',
@@ -204,7 +184,6 @@ const contentItems = [
     caption: 'Plastic as future archaeological data.',
     year: '2026'
   },
-
   {
     type: 'image',
     path: '/images/img_04.jpg',
@@ -213,7 +192,6 @@ const contentItems = [
     caption: 'Image universe generated from collected waste.',
     year: '2026'
   },
-
   {
     type: 'image',
     path: '/images/img_05.jpg',
@@ -222,7 +200,6 @@ const contentItems = [
     caption: 'A contradiction between cleanup and attraction.',
     year: '2026'
   }
-
 ]
 
 // ======================================================
@@ -230,15 +207,12 @@ const contentItems = [
 // ======================================================
 
 const textureCache = new Map()
-
 const videoElements = []
 
 function createImageTexture(path) {
-
   const texture = imageLoader.load(path)
 
   texture.colorSpace = THREE.SRGBColorSpace
-
   texture.minFilter = THREE.LinearFilter
   texture.magFilter = THREE.LinearFilter
 
@@ -246,11 +220,9 @@ function createImageTexture(path) {
 }
 
 function createVideoTexture(path) {
-
   const video = document.createElement('video')
 
   video.src = path
-
   video.loop = true
   video.muted = true
   video.autoplay = true
@@ -264,7 +236,6 @@ function createVideoTexture(path) {
   const texture = new THREE.VideoTexture(video)
 
   texture.colorSpace = THREE.SRGBColorSpace
-
   texture.minFilter = THREE.LinearFilter
   texture.magFilter = THREE.LinearFilter
 
@@ -272,7 +243,6 @@ function createVideoTexture(path) {
 }
 
 function getTexture(item) {
-
   if (textureCache.has(item.path)) {
     return textureCache.get(item.path)
   }
@@ -290,12 +260,9 @@ function getTexture(item) {
 window.addEventListener(
   'pointerdown',
   () => {
-
     for (const video of videoElements) {
-
       video.play().catch(() => {})
     }
-
   },
   { once: true }
 )
@@ -305,58 +272,35 @@ window.addEventListener(
 // ======================================================
 
 const meshes = []
-
 const CARD_COUNT = isMobile ? 30 : 55
 
 for (let i = 0; i < CARD_COUNT; i++) {
-
   const item =
-    contentItems[
-      Math.floor(
-        Math.random() * contentItems.length
-      )
-    ]
+    contentItems[Math.floor(Math.random() * contentItems.length)]
 
   const texture = getTexture(item)
 
-  const geometry =
-    new THREE.PlaneGeometry(5, 5)
+  const geometry = new THREE.PlaneGeometry(5, 5)
 
-  const material =
-    new THREE.MeshBasicMaterial({
-      map: texture,
-      transparent: true,
-      side: THREE.DoubleSide
-    })
+  const material = new THREE.MeshBasicMaterial({
+    map: texture,
+    transparent: true,
+    side: THREE.DoubleSide
+  })
 
-  const mesh =
-    new THREE.Mesh(
-      geometry,
-      material
-    )
+  const mesh = new THREE.Mesh(geometry, material)
 
-  mesh.position.x =
-    (Math.random() - 0.5) * 190
+  mesh.position.x = (Math.random() - 0.5) * 190
+  mesh.position.y = (Math.random() - 0.5) * 190
+  mesh.position.z = (Math.random() - 0.5) * 190
 
-  mesh.position.y =
-    (Math.random() - 0.5) * 190
+  const scale = 0.9 + Math.random() * 1.5
 
-  mesh.position.z =
-    (Math.random() - 0.5) * 190
-
-  const scale =
-    0.9 + Math.random() * 1.5
-
-  mesh.scale.set(
-    scale,
-    scale,
-    scale
-  )
+  mesh.scale.set(scale, scale, scale)
 
   mesh.userData = item
 
   scene.add(mesh)
-
   meshes.push(mesh)
 }
 
@@ -364,102 +308,65 @@ for (let i = 0; i < CARD_COUNT; i++) {
 // CLICK
 // ======================================================
 
-const raycaster =
-  new THREE.Raycaster()
+const raycaster = new THREE.Raycaster()
+const mouse = new THREE.Vector2()
 
-const mouse =
-  new THREE.Vector2()
-
-window.addEventListener(
-  'click',
-  (event) => {
-
-    if (
-      event.target.closest('#galleryOverlay')
-    ) {
-      return
-    }
-
-    mouse.x =
-      (event.clientX / window.innerWidth)
-      * 2 - 1
-
-    mouse.y =
-      -(event.clientY / window.innerHeight)
-      * 2 + 1
-
-    raycaster.setFromCamera(
-      mouse,
-      camera
-    )
-
-    const intersects =
-      raycaster.intersectObjects(meshes)
-
-    if (intersects.length > 0) {
-
-      const item =
-        intersects[0].object.userData
-
-      showGallery(item.category)
-    }
+window.addEventListener('click', (event) => {
+  if (event.target.closest('#galleryOverlay')) {
+    return
   }
-)
+
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1
+
+  raycaster.setFromCamera(mouse, camera)
+
+  const intersects = raycaster.intersectObjects(meshes)
+
+  if (intersects.length > 0) {
+    const item = intersects[0].object.userData
+
+    showGallery(item.category)
+  }
+})
 
 // ======================================================
 // GALLERY
 // ======================================================
 
 function showGallery(category) {
-
-  const old =
-    document.getElementById(
-      'galleryOverlay'
-    )
+  const old = document.getElementById('galleryOverlay')
 
   if (old) {
     old.remove()
   }
 
-  const overlay =
-    document.createElement('div')
+  const overlay = document.createElement('div')
 
   overlay.id = 'galleryOverlay'
 
   overlay.style.position = 'fixed'
   overlay.style.top = '0'
   overlay.style.left = '0'
-
   overlay.style.width = '100%'
   overlay.style.height = '100%'
-
   overlay.style.zIndex = '9999'
-
   overlay.style.background = 'white'
-
   overlay.style.color = 'black'
-
   overlay.style.overflowY = 'scroll'
-
   overlay.style.WebkitOverflowScrolling = 'touch'
 
   document.body.appendChild(overlay)
 
   injectGalleryCSS()
 
-  const items =
-    contentItems.filter(
-      (item) =>
-        item.category === category
-    )
+  const items = contentItems.filter((item) => item.category === category)
 
   const cardsHTML =
     items
       .map((item) => {
-
         const mediaHTML =
           item.type === 'video'
-
             ? `
               <video
                 src="${item.path}"
@@ -471,13 +378,11 @@ function showGallery(category) {
                 preload="auto"
               ></video>
             `
-
             : `
               <img src="${item.path}" />
             `
 
         return `
-
           <article class="gallery-card">
 
             <div class="media-box">
@@ -505,13 +410,11 @@ function showGallery(category) {
             </div>
 
           </article>
-
         `
       })
       .join('')
 
   overlay.innerHTML = `
-
     <button id="closeOverlay">
       CLOSE
     </button>
@@ -537,19 +440,13 @@ function showGallery(category) {
       </div>
 
     </section>
-
   `
 
   document
     .getElementById('closeOverlay')
-    .addEventListener(
-      'click',
-      () => {
-
-        overlay.remove()
-
-      }
-    )
+    .addEventListener('click', () => {
+      overlay.remove()
+    })
 }
 
 // ======================================================
@@ -557,22 +454,14 @@ function showGallery(category) {
 // ======================================================
 
 function injectGalleryCSS() {
+  if (document.getElementById('galleryStyle')) return
 
-  if (
-    document.getElementById(
-      'galleryStyle'
-    )
-  ) return
-
-  const style =
-    document.createElement('style')
+  const style = document.createElement('style')
 
   style.id = 'galleryStyle'
 
   style.innerHTML = `
-
     #closeOverlay {
-
       position: fixed;
 
       top: 22px;
@@ -602,7 +491,6 @@ function injectGalleryCSS() {
     }
 
     .gallery-wrap {
-
       width: min(1100px, 90vw);
 
       margin: 0 auto;
@@ -613,14 +501,12 @@ function injectGalleryCSS() {
     }
 
     .gallery-header {
-
       text-align: center;
 
       margin-bottom: 100px;
     }
 
     .gallery-header p {
-
       margin: 0 0 18px;
 
       font-family:
@@ -635,7 +521,6 @@ function injectGalleryCSS() {
     }
 
     .gallery-header h1 {
-
       margin: 0;
 
       font-family:
@@ -653,7 +538,6 @@ function injectGalleryCSS() {
     }
 
     .gallery-list {
-
       display: flex;
 
       flex-direction: column;
@@ -662,7 +546,6 @@ function injectGalleryCSS() {
     }
 
     .gallery-card {
-
       display: grid;
 
       grid-template-columns:
@@ -679,19 +562,17 @@ function injectGalleryCSS() {
     }
 
     .media-box {
-
       width: 100%;
 
       background: #f3f3f3;
 
-      border-radius: 24px;
+      border-radius: 0 !important;
 
-      overflow: hidden;
+      overflow: visible;
     }
 
     .media-box img,
     .media-box video {
-
       display: block;
 
       width: 100%;
@@ -703,10 +584,11 @@ function injectGalleryCSS() {
       object-fit: contain;
 
       background: #eee;
+
+      border-radius: 0 !important;
     }
 
     .category-label {
-
       margin: 0 0 18px;
 
       font-family:
@@ -721,7 +603,6 @@ function injectGalleryCSS() {
     }
 
     .text-box h2 {
-
       margin: 0 0 22px;
 
       font-family:
@@ -739,7 +620,6 @@ function injectGalleryCSS() {
     }
 
     .caption {
-
       margin: 0 0 24px;
 
       font-family:
@@ -754,7 +634,6 @@ function injectGalleryCSS() {
     }
 
     .year {
-
       margin: 0;
 
       font-family:
@@ -769,9 +648,7 @@ function injectGalleryCSS() {
     }
 
     @media (max-width: 768px) {
-
       #closeOverlay {
-
         top: 16px;
         right: 16px;
 
@@ -781,19 +658,16 @@ function injectGalleryCSS() {
       }
 
       .gallery-wrap {
-
         width: 88vw;
 
         padding: 90px 0 100px;
       }
 
       .gallery-header {
-
         margin-bottom: 60px;
       }
 
       .gallery-card {
-
         display: flex;
 
         flex-direction: column;
@@ -806,28 +680,23 @@ function injectGalleryCSS() {
       }
 
       .gallery-list {
-
         gap: 70px;
       }
 
       .gallery-header h1 {
-
         font-size: 72px;
       }
 
       .text-box h2 {
-
         font-size: 42px;
       }
 
       .caption {
-
         font-size: 14px;
 
         line-height: 1.8;
       }
     }
-
   `
 
   document.head.appendChild(style)
@@ -838,18 +707,13 @@ function injectGalleryCSS() {
 // ======================================================
 
 function animate() {
-
   requestAnimationFrame(animate)
 
-  scene.rotation.y +=
-    isMobile
-      ? 0.00008
-      : 0.00015
+  scene.rotation.y += isMobile ? 0.00008 : 0.00015
 
   controls.update()
 
   for (const mesh of meshes) {
-
     mesh.lookAt(camera.position)
   }
 
@@ -862,26 +726,14 @@ animate()
 // RESIZE
 // ======================================================
 
-window.addEventListener(
-  'resize',
-  () => {
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight
 
-    camera.aspect =
-      window.innerWidth
-      / window.innerHeight
+  camera.updateProjectionMatrix()
 
-    camera.updateProjectionMatrix()
+  renderer.setSize(window.innerWidth, window.innerHeight)
 
-    renderer.setSize(
-      window.innerWidth,
-      window.innerHeight
-    )
-
-    renderer.setPixelRatio(
-      Math.min(
-        window.devicePixelRatio,
-        isMobile ? 1 : 1.5
-      )
-    )
-  }
-)
+  renderer.setPixelRatio(
+    Math.min(window.devicePixelRatio, isMobile ? 1 : 1.5)
+  )
+})
