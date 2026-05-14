@@ -2,8 +2,40 @@ import './style.css'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 
+// ======================================================
+// FONT
+// ======================================================
+
+const fontStyle = document.createElement('style')
+
+fontStyle.innerHTML = `
+@font-face {
+  font-family: 'FrutigerLight';
+  src: url('/fonts/FrutigerLTStd-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'FrutigerRoman';
+  src: url('/fonts/FrutigerLTStd-Roman.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+`
+
+document.head.appendChild(fontStyle)
+
+// ======================================================
+// BASIC
+// ======================================================
+
+const isMobile =
+  window.innerWidth < 768 ||
+  /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+
 const scene = new THREE.Scene()
-scene.background = new THREE.Color(0x000000)
+scene.background = new THREE.Color(0xffffff)
 
 const camera = new THREE.PerspectiveCamera(
   75,
@@ -12,24 +44,24 @@ const camera = new THREE.PerspectiveCamera(
   2000
 )
 
-camera.position.z = 40
+camera.position.z = isMobile ? 70 : 45
 
 const renderer = new THREE.WebGLRenderer({
-  antialias: true
+  antialias: !isMobile,
+  alpha: false
 })
 
-renderer.setSize(
-  window.innerWidth,
-  window.innerHeight
-)
+renderer.setSize(window.innerWidth, window.innerHeight)
 
 renderer.setPixelRatio(
-  Math.min(window.devicePixelRatio, 1.5)
+  Math.min(window.devicePixelRatio, isMobile ? 1 : 1.5)
 )
 
-document.body.appendChild(
-  renderer.domElement
-)
+document.body.style.margin = '0'
+document.body.style.overflow = 'hidden'
+document.body.style.background = 'white'
+
+document.body.appendChild(renderer.domElement)
 
 const controls = new OrbitControls(
   camera,
@@ -37,13 +69,12 @@ const controls = new OrbitControls(
 )
 
 controls.enableDamping = true
-controls.dampingFactor = 0.03
+controls.dampingFactor = 0.04
 
 controls.autoRotate = true
-controls.autoRotateSpeed = 0.05
+controls.autoRotateSpeed = isMobile ? 0.025 : 0.05
 
-const imageLoader =
-  new THREE.TextureLoader()
+const imageLoader = new THREE.TextureLoader()
 
 // ======================================================
 // CONTENTS
@@ -51,9 +82,7 @@ const imageLoader =
 
 const contentItems = [
 
-  // ======================================================
   // VIDEO
-  // ======================================================
 
   {
     type: 'video',
@@ -100,9 +129,7 @@ const contentItems = [
     year: '2026'
   },
 
-  // ======================================================
   // PHYSICAL
-  // ======================================================
 
   {
     type: 'image',
@@ -149,9 +176,7 @@ const contentItems = [
     year: '2026'
   },
 
-  // ======================================================
   // IMAGE
-  // ======================================================
 
   {
     type: 'image',
@@ -201,67 +226,79 @@ const contentItems = [
 ]
 
 // ======================================================
-// VIDEO TEXTURES
+// TEXTURE CACHE
 // ======================================================
+
+const textureCache = new Map()
 
 const videoElements = []
 
+function createImageTexture(path) {
+
+  const texture = imageLoader.load(path)
+
+  texture.colorSpace = THREE.SRGBColorSpace
+
+  texture.minFilter = THREE.LinearFilter
+  texture.magFilter = THREE.LinearFilter
+
+  return texture
+}
+
 function createVideoTexture(path) {
 
-  const video =
-    document.createElement('video')
+  const video = document.createElement('video')
 
   video.src = path
 
   video.loop = true
-
   video.muted = true
-
   video.autoplay = true
-
   video.playsInline = true
-
   video.preload = 'auto'
 
   video.play().catch(() => {})
 
   videoElements.push(video)
 
-  const texture =
-    new THREE.VideoTexture(video)
+  const texture = new THREE.VideoTexture(video)
 
-  texture.colorSpace =
-    THREE.SRGBColorSpace
+  texture.colorSpace = THREE.SRGBColorSpace
 
-  texture.minFilter =
-    THREE.LinearFilter
-
-  texture.magFilter =
-    THREE.LinearFilter
-
-  return texture
-}
-
-function createImageTexture(path) {
-
-  const texture =
-    imageLoader.load(path)
-
-  texture.colorSpace =
-    THREE.SRGBColorSpace
+  texture.minFilter = THREE.LinearFilter
+  texture.magFilter = THREE.LinearFilter
 
   return texture
 }
 
 function getTexture(item) {
 
-  if (item.type === 'video') {
-
-    return createVideoTexture(item.path)
+  if (textureCache.has(item.path)) {
+    return textureCache.get(item.path)
   }
 
-  return createImageTexture(item.path)
+  const texture =
+    item.type === 'video'
+      ? createVideoTexture(item.path)
+      : createImageTexture(item.path)
+
+  textureCache.set(item.path, texture)
+
+  return texture
 }
+
+window.addEventListener(
+  'pointerdown',
+  () => {
+
+    for (const video of videoElements) {
+
+      video.play().catch(() => {})
+    }
+
+  },
+  { once: true }
+)
 
 // ======================================================
 // MESHES
@@ -269,23 +306,21 @@ function getTexture(item) {
 
 const meshes = []
 
-const CARD_COUNT = 75
+const CARD_COUNT = isMobile ? 30 : 55
 
 for (let i = 0; i < CARD_COUNT; i++) {
 
   const item =
     contentItems[
       Math.floor(
-        Math.random()
-        * contentItems.length
+        Math.random() * contentItems.length
       )
     ]
 
-  const texture =
-    getTexture(item)
+  const texture = getTexture(item)
 
   const geometry =
-    new THREE.PlaneGeometry(4, 4)
+    new THREE.PlaneGeometry(5, 5)
 
   const material =
     new THREE.MeshBasicMaterial({
@@ -301,16 +336,16 @@ for (let i = 0; i < CARD_COUNT; i++) {
     )
 
   mesh.position.x =
-    (Math.random() - 0.5) * 200
+    (Math.random() - 0.5) * 190
 
   mesh.position.y =
-    (Math.random() - 0.5) * 200
+    (Math.random() - 0.5) * 190
 
   mesh.position.z =
-    (Math.random() - 0.5) * 200
+    (Math.random() - 0.5) * 190
 
   const scale =
-    0.8 + Math.random() * 1.4
+    0.9 + Math.random() * 1.5
 
   mesh.scale.set(
     scale,
@@ -326,46 +361,6 @@ for (let i = 0; i < CARD_COUNT; i++) {
 }
 
 // ======================================================
-// STARS
-// ======================================================
-
-const starsGeometry =
-  new THREE.BufferGeometry()
-
-const starsCount = 1500
-
-const positions =
-  new Float32Array(starsCount * 3)
-
-for (let i = 0; i < starsCount * 3; i++) {
-
-  positions[i] =
-    (Math.random() - 0.5) * 1000
-}
-
-starsGeometry.setAttribute(
-  'position',
-  new THREE.BufferAttribute(
-    positions,
-    3
-  )
-)
-
-const starsMaterial =
-  new THREE.PointsMaterial({
-    color: 0xffffff,
-    size: 0.5
-  })
-
-const stars =
-  new THREE.Points(
-    starsGeometry,
-    starsMaterial
-  )
-
-scene.add(stars)
-
-// ======================================================
 // CLICK
 // ======================================================
 
@@ -376,21 +371,14 @@ const mouse =
   new THREE.Vector2()
 
 window.addEventListener(
-  'pointerdown',
-  () => {
-
-    for (const video of videoElements) {
-
-      video.play().catch(() => {})
-    }
-
-  },
-  { once: true }
-)
-
-window.addEventListener(
   'click',
   (event) => {
+
+    if (
+      event.target.closest('#galleryOverlay')
+    ) {
+      return
+    }
 
     mouse.x =
       (event.clientX / window.innerWidth)
@@ -413,154 +401,147 @@ window.addEventListener(
       const item =
         intersects[0].object.userData
 
-      showOverlay(item)
+      showGallery(item.category)
     }
   }
 )
 
 // ======================================================
-// OVERLAY
+// GALLERY
 // ======================================================
 
-function showOverlay(item) {
+function showGallery(category) {
 
-  let overlay =
-    document.getElementById('overlay')
-
-  if (!overlay) {
-
-    overlay =
-      document.createElement('div')
-
-    overlay.id = 'overlay'
-
-    overlay.style.position = 'fixed'
-    overlay.style.top = '0'
-    overlay.style.left = '0'
-
-    overlay.style.width = '100%'
-    overlay.style.height = '100%'
-
-    overlay.style.background = 'white'
-
-    overlay.style.display = 'flex'
-
-    overlay.style.flexDirection = 'column'
-
-    overlay.style.justifyContent = 'center'
-
-    overlay.style.alignItems = 'center'
-
-    overlay.style.zIndex = '9999'
-
-    overlay.style.padding = '40px'
-
-    overlay.style.boxSizing = 'border-box'
-
-    document.body.appendChild(
-      overlay
+  const old =
+    document.getElementById(
+      'galleryOverlay'
     )
+
+  if (old) {
+    old.remove()
   }
 
-  const mediaHTML =
+  const overlay =
+    document.createElement('div')
 
-    item.type === 'video'
+  overlay.id = 'galleryOverlay'
 
-      ? `
-        <video
-          src="${item.path}"
-          autoplay
-          loop
-          muted
-          playsinline
-          controls
+  overlay.style.position = 'fixed'
+  overlay.style.top = '0'
+  overlay.style.left = '0'
 
-          style="
-            max-width:80%;
-            max-height:70%;
-            object-fit:contain;
-            margin-bottom:30px;
-            background:black;
-          "
-        ></video>
-      `
+  overlay.style.width = '100%'
+  overlay.style.height = '100%'
 
-      : `
-        <img
-          src="${item.path}"
+  overlay.style.zIndex = '9999'
 
-          style="
-            max-width:80%;
-            max-height:70%;
-            object-fit:contain;
-            margin-bottom:30px;
-          "
-        />
-      `
+  overlay.style.background = 'white'
+
+  overlay.style.color = 'black'
+
+  overlay.style.overflowY = 'scroll'
+
+  overlay.style.WebkitOverflowScrolling = 'touch'
+
+  document.body.appendChild(overlay)
+
+  injectGalleryCSS()
+
+  const items =
+    contentItems.filter(
+      (item) =>
+        item.category === category
+    )
+
+  const cardsHTML =
+    items
+      .map((item) => {
+
+        const mediaHTML =
+          item.type === 'video'
+
+            ? `
+              <video
+                src="${item.path}"
+                autoplay
+                loop
+                muted
+                playsinline
+                controls
+                preload="auto"
+              ></video>
+            `
+
+            : `
+              <img src="${item.path}" />
+            `
+
+        return `
+
+          <article class="gallery-card">
+
+            <div class="media-box">
+              ${mediaHTML}
+            </div>
+
+            <div class="text-box">
+
+              <p class="category-label">
+                ${item.category}
+              </p>
+
+              <h2>
+                ${item.title}
+              </h2>
+
+              <p class="caption">
+                ${item.caption}
+              </p>
+
+              <p class="year">
+                ${item.year}
+              </p>
+
+            </div>
+
+          </article>
+
+        `
+      })
+      .join('')
 
   overlay.innerHTML = `
 
-    <div style="
-      position:absolute;
-      top:30px;
-      left:30px;
-      color:black;
-      font-family:sans-serif;
-      font-size:14px;
-      letter-spacing:2px;
-    ">
-      ${item.category}
-    </div>
-
-    ${mediaHTML}
-
-    <h1 style="
-      color:black;
-      font-family:sans-serif;
-      margin:0;
-      margin-bottom:10px;
-    ">
-      ${item.title}
-    </h1>
-
-    <p style="
-      color:black;
-      font-family:sans-serif;
-      max-width:700px;
-      text-align:center;
-      line-height:1.7;
-      margin-bottom:10px;
-    ">
-      ${item.caption}
-    </p>
-
-    <p style="
-      color:gray;
-      font-family:sans-serif;
-      margin-bottom:30px;
-    ">
-      ${item.year}
-    </p>
-
-    <button
-      id="closeButton"
-
-      style="
-        padding:12px 24px;
-        border:none;
-        background:black;
-        color:white;
-        cursor:pointer;
-        font-size:16px;
-      "
-    >
+    <button id="closeOverlay">
       CLOSE
     </button>
+
+    <section class="gallery-wrap">
+
+      <header class="gallery-header">
+
+        <p>
+          PIMLICO ARTS JAPAN
+        </p>
+
+        <h1>
+          ${category}
+        </h1>
+
+      </header>
+
+      <div class="gallery-list">
+
+        ${cardsHTML}
+
+      </div>
+
+    </section>
 
   `
 
   document
-    .getElementById('closeButton')
+    .getElementById('closeOverlay')
     .addEventListener(
       'click',
       () => {
@@ -572,6 +553,287 @@ function showOverlay(item) {
 }
 
 // ======================================================
+// CSS
+// ======================================================
+
+function injectGalleryCSS() {
+
+  if (
+    document.getElementById(
+      'galleryStyle'
+    )
+  ) return
+
+  const style =
+    document.createElement('style')
+
+  style.id = 'galleryStyle'
+
+  style.innerHTML = `
+
+    #closeOverlay {
+
+      position: fixed;
+
+      top: 22px;
+      right: 22px;
+
+      z-index: 10000;
+
+      border: 1px solid black;
+
+      background: black;
+
+      color: white;
+
+      padding: 12px 20px;
+
+      border-radius: 999px;
+
+      font-size: 11px;
+
+      letter-spacing: 2px;
+
+      cursor: pointer;
+
+      font-family:
+        'FrutigerRoman',
+        sans-serif;
+    }
+
+    .gallery-wrap {
+
+      width: min(1100px, 90vw);
+
+      margin: 0 auto;
+
+      padding: 100px 0 120px;
+
+      box-sizing: border-box;
+    }
+
+    .gallery-header {
+
+      text-align: center;
+
+      margin-bottom: 100px;
+    }
+
+    .gallery-header p {
+
+      margin: 0 0 18px;
+
+      font-family:
+        'FrutigerRoman',
+        sans-serif;
+
+      font-size: 11px;
+
+      letter-spacing: 4px;
+
+      color: #888;
+    }
+
+    .gallery-header h1 {
+
+      margin: 0;
+
+      font-family:
+        'FrutigerLight',
+        sans-serif;
+
+      font-size:
+        clamp(64px, 13vw, 180px);
+
+      line-height: 0.88;
+
+      letter-spacing: -0.08em;
+
+      font-weight: 300;
+    }
+
+    .gallery-list {
+
+      display: flex;
+
+      flex-direction: column;
+
+      gap: 100px;
+    }
+
+    .gallery-card {
+
+      display: grid;
+
+      grid-template-columns:
+        1.2fr 0.8fr;
+
+      gap: 40px;
+
+      align-items: center;
+
+      padding-bottom: 100px;
+
+      border-bottom:
+        1px solid rgba(0,0,0,0.08);
+    }
+
+    .media-box {
+
+      width: 100%;
+
+      background: #f3f3f3;
+
+      border-radius: 24px;
+
+      overflow: hidden;
+    }
+
+    .media-box img,
+    .media-box video {
+
+      display: block;
+
+      width: 100%;
+
+      height: auto;
+
+      max-height: 78vh;
+
+      object-fit: contain;
+
+      background: #eee;
+    }
+
+    .category-label {
+
+      margin: 0 0 18px;
+
+      font-family:
+        'FrutigerRoman',
+        sans-serif;
+
+      font-size: 11px;
+
+      letter-spacing: 3px;
+
+      color: #888;
+    }
+
+    .text-box h2 {
+
+      margin: 0 0 22px;
+
+      font-family:
+        'FrutigerLight',
+        sans-serif;
+
+      font-size:
+        clamp(34px, 5vw, 74px);
+
+      line-height: 0.95;
+
+      letter-spacing: -0.06em;
+
+      font-weight: 300;
+    }
+
+    .caption {
+
+      margin: 0 0 24px;
+
+      font-family:
+        'FrutigerRoman',
+        sans-serif;
+
+      font-size: 15px;
+
+      line-height: 1.9;
+
+      color: #333;
+    }
+
+    .year {
+
+      margin: 0;
+
+      font-family:
+        'FrutigerRoman',
+        sans-serif;
+
+      font-size: 12px;
+
+      letter-spacing: 2px;
+
+      color: #999;
+    }
+
+    @media (max-width: 768px) {
+
+      #closeOverlay {
+
+        top: 16px;
+        right: 16px;
+
+        padding: 10px 15px;
+
+        font-size: 10px;
+      }
+
+      .gallery-wrap {
+
+        width: 88vw;
+
+        padding: 90px 0 100px;
+      }
+
+      .gallery-header {
+
+        margin-bottom: 60px;
+      }
+
+      .gallery-card {
+
+        display: flex;
+
+        flex-direction: column;
+
+        align-items: stretch;
+
+        gap: 24px;
+
+        padding-bottom: 70px;
+      }
+
+      .gallery-list {
+
+        gap: 70px;
+      }
+
+      .gallery-header h1 {
+
+        font-size: 72px;
+      }
+
+      .text-box h2 {
+
+        font-size: 42px;
+      }
+
+      .caption {
+
+        font-size: 14px;
+
+        line-height: 1.8;
+      }
+    }
+
+  `
+
+  document.head.appendChild(style)
+}
+
+// ======================================================
 // ANIMATE
 // ======================================================
 
@@ -579,7 +841,10 @@ function animate() {
 
   requestAnimationFrame(animate)
 
-  scene.rotation.y += 0.00015
+  scene.rotation.y +=
+    isMobile
+      ? 0.00008
+      : 0.00015
 
   controls.update()
 
@@ -610,6 +875,13 @@ window.addEventListener(
     renderer.setSize(
       window.innerWidth,
       window.innerHeight
+    )
+
+    renderer.setPixelRatio(
+      Math.min(
+        window.devicePixelRatio,
+        isMobile ? 1 : 1.5
+      )
     )
   }
 )
