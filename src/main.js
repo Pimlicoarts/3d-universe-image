@@ -99,13 +99,24 @@ topMenu.id = 'topMenu'
 
 topMenu.innerHTML = `
   <button>ABOUT</button>
+
   <button>WORKS</button>
-  <button>SHOP</button>
+
+  <button onclick="window.open('https://pimlicoartjapan.myshopify.com/', '_blank')">
+    SHOP
+  </button>
+
   <button>WORKSHOP</button>
+
   <button>MUSICANA</button>
+
   <button>NEWS</button>
+
   <button>CONTACT</button>
-  <button>IG</button>
+
+  <button onclick="window.open('https://www.instagram.com/pimlicoarts/', '_blank')">
+    IG
+  </button>
 `
 
 document.body.appendChild(topMenu)
@@ -952,7 +963,7 @@ function injectGalleryCSS() {
         left: 18px;
         bottom: 18px;
 
-        width: 58px;
+        width: 52px;
 
         opacity: 0.45;
       }
