@@ -35,6 +35,7 @@ const isMobile =
   /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
 
 const scene = new THREE.Scene()
+
 scene.background = new THREE.Color(0xffffff)
 
 const camera = new THREE.PerspectiveCamera(
@@ -63,7 +64,10 @@ document.body.style.background = 'white'
 
 document.body.appendChild(renderer.domElement)
 
-const controls = new OrbitControls(camera, renderer.domElement)
+const controls = new OrbitControls(
+  camera,
+  renderer.domElement
+)
 
 controls.enableDamping = true
 controls.dampingFactor = 0.04
@@ -72,6 +76,27 @@ controls.autoRotate = true
 controls.autoRotateSpeed = isMobile ? 0.025 : 0.05
 
 const imageLoader = new THREE.TextureLoader()
+
+// ======================================================
+// TOP MENU
+// ======================================================
+
+const topMenu = document.createElement('div')
+
+topMenu.id = 'topMenu'
+
+topMenu.innerHTML = `
+  <button>ABOUT</button>
+  <button>WORKS</button>
+  <button>SHOP</button>
+  <button>WORKSHOP</button>
+  <button>MUSICANA</button>
+  <button>NEWS</button>
+  <button>CONTACT</button>
+  <button>IG</button>
+`
+
+document.body.appendChild(topMenu)
 
 // ======================================================
 // CONTENTS
@@ -86,6 +111,7 @@ const contentItems = [
     caption: 'Moving image archive.',
     year: '2026'
   },
+
   {
     type: 'video',
     path: '/videos/vid_02.MP4',
@@ -94,6 +120,7 @@ const contentItems = [
     caption: 'Experimental visual sequence.',
     year: '2026'
   },
+
   {
     type: 'video',
     path: '/videos/vid_03.MP4',
@@ -102,6 +129,7 @@ const contentItems = [
     caption: 'Video fragment floating in digital space.',
     year: '2026'
   },
+
   {
     type: 'video',
     path: '/videos/vid_04.MP4',
@@ -110,6 +138,7 @@ const contentItems = [
     caption: 'Motion texture inside the PLX universe.',
     year: '2026'
   },
+
   {
     type: 'video',
     path: '/videos/vid_05.MP4',
@@ -127,6 +156,7 @@ const contentItems = [
     caption: 'Ocean plastic transformed into physical sculpture.',
     year: '2026'
   },
+
   {
     type: 'image',
     path: '/physical/phy_02.jpg',
@@ -135,6 +165,7 @@ const contentItems = [
     caption: 'Material memories collected from the ocean.',
     year: '2026'
   },
+
   {
     type: 'image',
     path: '/physical/phy_03.jpg',
@@ -143,6 +174,7 @@ const contentItems = [
     caption: 'A physical work made from plastic material.',
     year: '2026'
   },
+
   {
     type: 'image',
     path: '/physical/phy_04.jpg',
@@ -151,6 +183,7 @@ const contentItems = [
     caption: 'Object archive from Pimlico Arts.',
     year: '2026'
   },
+
   {
     type: 'image',
     path: '/physical/phy_05.jpg',
@@ -168,6 +201,7 @@ const contentItems = [
     caption: 'Ocean plastic transformed into digital structure.',
     year: '2026'
   },
+
   {
     type: 'image',
     path: '/images/img_02.jpg',
@@ -176,6 +210,7 @@ const contentItems = [
     caption: 'Memory fragments floating in digital space.',
     year: '2026'
   },
+
   {
     type: 'image',
     path: '/images/img_03.jpg',
@@ -184,6 +219,7 @@ const contentItems = [
     caption: 'Plastic as future archaeological data.',
     year: '2026'
   },
+
   {
     type: 'image',
     path: '/images/img_04.jpg',
@@ -192,6 +228,7 @@ const contentItems = [
     caption: 'Image universe generated from collected waste.',
     year: '2026'
   },
+
   {
     type: 'image',
     path: '/images/img_05.jpg',
@@ -207,12 +244,14 @@ const contentItems = [
 // ======================================================
 
 const textureCache = new Map()
+
 const videoElements = []
 
 function createImageTexture(path) {
   const texture = imageLoader.load(path)
 
   texture.colorSpace = THREE.SRGBColorSpace
+
   texture.minFilter = THREE.LinearFilter
   texture.magFilter = THREE.LinearFilter
 
@@ -223,6 +262,7 @@ function createVideoTexture(path) {
   const video = document.createElement('video')
 
   video.src = path
+
   video.loop = true
   video.muted = true
   video.autoplay = true
@@ -236,6 +276,7 @@ function createVideoTexture(path) {
   const texture = new THREE.VideoTexture(video)
 
   texture.colorSpace = THREE.SRGBColorSpace
+
   texture.minFilter = THREE.LinearFilter
   texture.magFilter = THREE.LinearFilter
 
@@ -272,35 +313,57 @@ window.addEventListener(
 // ======================================================
 
 const meshes = []
+
 const CARD_COUNT = isMobile ? 30 : 55
 
 for (let i = 0; i < CARD_COUNT; i++) {
   const item =
-    contentItems[Math.floor(Math.random() * contentItems.length)]
+    contentItems[
+      Math.floor(
+        Math.random() * contentItems.length
+      )
+    ]
 
   const texture = getTexture(item)
 
-  const geometry = new THREE.PlaneGeometry(5, 5)
+  const geometry =
+    new THREE.PlaneGeometry(5, 5)
 
-  const material = new THREE.MeshBasicMaterial({
-    map: texture,
-    transparent: true,
-    side: THREE.DoubleSide
-  })
+  const material =
+    new THREE.MeshBasicMaterial({
+      map: texture,
+      transparent: true,
+      side: THREE.DoubleSide
+    })
 
-  const mesh = new THREE.Mesh(geometry, material)
+  const mesh =
+    new THREE.Mesh(
+      geometry,
+      material
+    )
 
-  mesh.position.x = (Math.random() - 0.5) * 190
-  mesh.position.y = (Math.random() - 0.5) * 190
-  mesh.position.z = (Math.random() - 0.5) * 190
+  mesh.position.x =
+    (Math.random() - 0.5) * 190
 
-  const scale = 0.9 + Math.random() * 1.5
+  mesh.position.y =
+    (Math.random() - 0.5) * 190
 
-  mesh.scale.set(scale, scale, scale)
+  mesh.position.z =
+    (Math.random() - 0.5) * 190
+
+  const scale =
+    0.9 + Math.random() * 1.5
+
+  mesh.scale.set(
+    scale,
+    scale,
+    scale
+  )
 
   mesh.userData = item
 
   scene.add(mesh)
+
   meshes.push(mesh)
 }
 
@@ -308,70 +371,109 @@ for (let i = 0; i < CARD_COUNT; i++) {
 // CLICK
 // ======================================================
 
-const raycaster = new THREE.Raycaster()
-const mouse = new THREE.Vector2()
+const raycaster =
+  new THREE.Raycaster()
 
-window.addEventListener('click', (event) => {
-  if (event.target.closest('#galleryOverlay')) {
-    return
+const mouse =
+  new THREE.Vector2()
+
+window.addEventListener(
+  'click',
+  (event) => {
+    if (
+      event.target.closest('#galleryOverlay') ||
+      event.target.closest('#topMenu')
+    ) {
+      return
+    }
+
+    mouse.x =
+      (event.clientX / window.innerWidth)
+      * 2 - 1
+
+    mouse.y =
+      -(event.clientY / window.innerHeight)
+      * 2 + 1
+
+    raycaster.setFromCamera(
+      mouse,
+      camera
+    )
+
+    const intersects =
+      raycaster.intersectObjects(meshes)
+
+    if (intersects.length > 0) {
+      const item =
+        intersects[0].object.userData
+
+      showGallery(
+        item.category,
+        item.path
+      )
+    }
   }
-
-  mouse.x = (event.clientX / window.innerWidth) * 2 - 1
-  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1
-
-  raycaster.setFromCamera(mouse, camera)
-
-  const intersects = raycaster.intersectObjects(meshes)
-
-  if (intersects.length > 0) {
-    const item = intersects[0].object.userData
-
-    showGallery(item.category, item.path)
-  }
-})
+)
 
 // ======================================================
 // GALLERY
 // ======================================================
 
-function showGallery(category, selectedPath) {
-  const old = document.getElementById('galleryOverlay')
+function showGallery(
+  category,
+  selectedPath
+) {
+  const old =
+    document.getElementById(
+      'galleryOverlay'
+    )
 
   if (old) {
     old.remove()
   }
 
-  const overlay = document.createElement('div')
+  const overlay =
+    document.createElement('div')
 
   overlay.id = 'galleryOverlay'
 
   overlay.style.position = 'fixed'
   overlay.style.top = '0'
   overlay.style.left = '0'
+
   overlay.style.width = '100%'
   overlay.style.height = '100%'
+
   overlay.style.zIndex = '9999'
+
   overlay.style.background = 'white'
+
   overlay.style.color = 'black'
+
   overlay.style.overflowY = 'scroll'
+
   overlay.style.WebkitOverflowScrolling = 'touch'
 
   document.body.appendChild(overlay)
 
   injectGalleryCSS()
 
-  const items = contentItems.filter((item) => item.category === category)
+  const items =
+    contentItems.filter(
+      (item) =>
+        item.category === category
+    )
 
   function createCards(loopIndex) {
     return items
-      .map((item, itemIndex) => {
-        const cardId =
-          loopIndex === 1 && item.path === selectedPath
-            ? 'selectedGalleryItem'
-            : ''
+      .map((item) => {
+        const isSelected =
+          item.path === selectedPath &&
+          loopIndex === 1
 
         const mediaHTML =
           item.type === 'video'
+
             ? `
               <video
                 src="${item.path}"
@@ -383,17 +485,16 @@ function showGallery(category, selectedPath) {
                 preload="auto"
               ></video>
             `
+
             : `
               <img src="${item.path}" />
             `
 
         return `
+
           <article
             class="gallery-card"
-            ${cardId ? `id="${cardId}"` : ''}
-            data-path="${item.path}"
-            data-index="${itemIndex}"
-            data-loop="${loopIndex}"
+            ${isSelected ? 'id="selectedCard"' : ''}
           >
 
             <div class="media-box">
@@ -421,12 +522,14 @@ function showGallery(category, selectedPath) {
             </div>
 
           </article>
+
         `
       })
       .join('')
   }
 
   overlay.innerHTML = `
+
     <button id="closeOverlay">
       CLOSE
     </button>
@@ -445,85 +548,74 @@ function showGallery(category, selectedPath) {
 
       </header>
 
-      <div class="gallery-list" id="galleryList">
+      <div class="gallery-list">
 
-        <div class="gallery-loop-set" id="gallerySetTop">
+        <div class="gallery-loop">
           ${createCards(0)}
         </div>
 
-        <div class="gallery-loop-set" id="gallerySetMiddle">
+        <div class="gallery-loop">
           ${createCards(1)}
         </div>
 
-        <div class="gallery-loop-set" id="gallerySetBottom">
+        <div class="gallery-loop">
           ${createCards(2)}
         </div>
 
       </div>
 
     </section>
+
   `
 
-  const closeButton = document.getElementById('closeOverlay')
-
-  closeButton.addEventListener('click', () => {
-    overlay.remove()
-  })
-
-  const topSet = document.getElementById('gallerySetTop')
-  const middleSet = document.getElementById('gallerySetMiddle')
-  const bottomSet = document.getElementById('gallerySetBottom')
-  const selectedItem = document.getElementById('selectedGalleryItem')
-
-  let isAdjustingScroll = false
-
-  function getLoopHeight() {
-    return middleSet.offsetHeight + 100
-  }
-
-  function setupInitialScroll() {
-    const target = selectedItem || middleSet
-
-    const targetTop =
-      target.getBoundingClientRect().top -
-      overlay.getBoundingClientRect().top +
-      overlay.scrollTop
-
-    const offset = isMobile ? 90 : 120
-
-    overlay.scrollTop = Math.max(0, targetTop - offset)
-  }
-
-  function handleLoopScroll() {
-    if (isAdjustingScroll) return
-
-    const loopHeight = getLoopHeight()
-
-    if (loopHeight <= 0) return
-
-    const middleTop = middleSet.offsetTop
-    const bottomTop = bottomSet.offsetTop
-
-    if (overlay.scrollTop >= bottomTop) {
-      isAdjustingScroll = true
-      overlay.scrollTop = overlay.scrollTop - loopHeight
-      requestAnimationFrame(() => {
-        isAdjustingScroll = false
-      })
-    } else if (overlay.scrollTop < middleTop - 40) {
-      isAdjustingScroll = true
-      overlay.scrollTop = overlay.scrollTop + loopHeight
-      requestAnimationFrame(() => {
-        isAdjustingScroll = false
-      })
-    }
-  }
+  document
+    .getElementById('closeOverlay')
+    .addEventListener(
+      'click',
+      () => {
+        overlay.remove()
+      }
+    )
 
   requestAnimationFrame(() => {
-    setupInitialScroll()
+    const selected =
+      document.getElementById(
+        'selectedCard'
+      )
 
-    overlay.addEventListener('scroll', handleLoopScroll)
+    if (selected) {
+      selected.scrollIntoView({
+        behavior: 'instant',
+        block: 'center'
+      })
+    }
   })
+
+  overlay.addEventListener(
+    'scroll',
+    () => {
+      const loop =
+        overlay.querySelector('.gallery-loop')
+
+      if (!loop) return
+
+      const loopHeight =
+        loop.offsetHeight
+
+      if (
+        overlay.scrollTop
+        >= loopHeight * 2
+      ) {
+        overlay.scrollTop -= loopHeight
+      }
+
+      if (
+        overlay.scrollTop <= 0
+      ) {
+        overlay.scrollTop += loopHeight
+      }
+    }
+  )
 }
 
 // ======================================================
@@ -531,14 +623,67 @@ function showGallery(category, selectedPath) {
 // ======================================================
 
 function injectGalleryCSS() {
-  if (document.getElementById('galleryStyle')) return
+  if (
+    document.getElementById(
+      'galleryStyle'
+    )
+  ) return
 
-  const style = document.createElement('style')
+  const style =
+    document.createElement('style')
 
   style.id = 'galleryStyle'
 
   style.innerHTML = `
+
+    #topMenu {
+
+      position: fixed;
+
+      top: 20px;
+      right: 20px;
+
+      z-index: 99999;
+
+      display: flex;
+
+      flex-direction: column;
+
+      align-items: flex-end;
+
+      gap: 6px;
+    }
+
+    #topMenu button {
+
+      background: transparent;
+
+      border: none;
+
+      color: black;
+
+      cursor: pointer;
+
+      padding: 0;
+
+      font-size: 12px;
+
+      letter-spacing: 1px;
+
+      font-family:
+        monospace;
+
+      transition:
+        opacity 0.2s ease;
+    }
+
+    #topMenu button:hover {
+
+      opacity: 0.4;
+    }
+
     #closeOverlay {
+
       position: fixed;
 
       top: 22px;
@@ -563,32 +708,33 @@ function injectGalleryCSS() {
       cursor: pointer;
 
       font-family:
-        'FrutigerRoman',
-        sans-serif;
+        monospace;
     }
 
     .gallery-wrap {
-      width: min(1100px, 90vw);
+
+      width: min(1500px, 96vw);
 
       margin: 0 auto;
 
-      padding: 100px 0 120px;
+      padding: 90px 0 110px;
 
       box-sizing: border-box;
     }
 
     .gallery-header {
+
       text-align: center;
 
-      margin-bottom: 100px;
+      margin-bottom: 80px;
     }
 
     .gallery-header p {
+
       margin: 0 0 18px;
 
       font-family:
-        'FrutigerRoman',
-        sans-serif;
+        monospace;
 
       font-size: 11px;
 
@@ -598,6 +744,7 @@ function injectGalleryCSS() {
     }
 
     .gallery-header h1 {
+
       margin: 0;
 
       font-family:
@@ -615,38 +762,42 @@ function injectGalleryCSS() {
     }
 
     .gallery-list {
+
       display: flex;
 
       flex-direction: column;
 
-      gap: 100px;
+      gap: 90px;
     }
 
-    .gallery-loop-set {
+    .gallery-loop {
+
       display: flex;
 
       flex-direction: column;
 
-      gap: 100px;
+      gap: 90px;
     }
 
     .gallery-card {
+
       display: grid;
 
       grid-template-columns:
-        1.2fr 0.8fr;
+        1.7fr 0.45fr;
 
-      gap: 40px;
+      gap: 32px;
 
       align-items: center;
 
-      padding-bottom: 100px;
+      padding-bottom: 90px;
 
       border-bottom:
         1px solid rgba(0,0,0,0.08);
     }
 
     .media-box {
+
       width: 100%;
 
       background: #f3f3f3;
@@ -658,13 +809,14 @@ function injectGalleryCSS() {
 
     .media-box img,
     .media-box video {
+
       display: block;
 
       width: 100%;
 
       height: auto;
 
-      max-height: 78vh;
+      max-height: 88vh;
 
       object-fit: contain;
 
@@ -674,11 +826,11 @@ function injectGalleryCSS() {
     }
 
     .category-label {
+
       margin: 0 0 18px;
 
       font-family:
-        'FrutigerRoman',
-        sans-serif;
+        monospace;
 
       font-size: 11px;
 
@@ -688,6 +840,7 @@ function injectGalleryCSS() {
     }
 
     .text-box h2 {
+
       margin: 0 0 22px;
 
       font-family:
@@ -705,13 +858,13 @@ function injectGalleryCSS() {
     }
 
     .caption {
+
       margin: 0 0 24px;
 
       font-family:
-        'FrutigerRoman',
-        sans-serif;
+        monospace;
 
-      font-size: 15px;
+      font-size: 14px;
 
       line-height: 1.9;
 
@@ -719,11 +872,11 @@ function injectGalleryCSS() {
     }
 
     .year {
+
       margin: 0;
 
       font-family:
-        'FrutigerRoman',
-        sans-serif;
+        monospace;
 
       font-size: 12px;
 
@@ -733,7 +886,22 @@ function injectGalleryCSS() {
     }
 
     @media (max-width: 768px) {
+
+      #topMenu {
+
+        top: 16px;
+        right: 16px;
+
+        gap: 4px;
+      }
+
+      #topMenu button {
+
+        font-size: 10px;
+      }
+
       #closeOverlay {
+
         top: 16px;
         right: 16px;
 
@@ -743,49 +911,64 @@ function injectGalleryCSS() {
       }
 
       .gallery-wrap {
-        width: 88vw;
 
-        padding: 90px 0 100px;
+        width: 94vw;
+
+        padding: 82px 0 96px;
       }
 
       .gallery-header {
-        margin-bottom: 60px;
+
+        margin-bottom: 50px;
       }
 
       .gallery-card {
+
         display: flex;
 
         flex-direction: column;
 
         align-items: stretch;
 
-        gap: 24px;
+        gap: 22px;
 
-        padding-bottom: 70px;
+        padding-bottom: 64px;
       }
 
       .gallery-list {
-        gap: 70px;
+
+        gap: 64px;
       }
 
-      .gallery-loop-set {
-        gap: 70px;
+      .gallery-loop {
+
+        gap: 64px;
+      }
+
+      .media-box img,
+      .media-box video {
+
+        max-height: 82vh;
       }
 
       .gallery-header h1 {
+
         font-size: 72px;
       }
 
       .text-box h2 {
+
         font-size: 42px;
       }
 
       .caption {
-        font-size: 14px;
+
+        font-size: 13px;
 
         line-height: 1.8;
       }
     }
+
   `
 
   document.head.appendChild(style)
@@ -798,7 +981,10 @@ function injectGalleryCSS() {
 function animate() {
   requestAnimationFrame(animate)
 
-  scene.rotation.y += isMobile ? 0.00008 : 0.00015
+  scene.rotation.y +=
+    isMobile
+      ? 0.00008
+      : 0.00015
 
   controls.update()
 
@@ -815,14 +1001,25 @@ animate()
 // RESIZE
 // ======================================================
 
-window.addEventListener('resize', () => {
-  camera.aspect = window.innerWidth / window.innerHeight
+window.addEventListener(
+  'resize',
+  () => {
+    camera.aspect =
+      window.innerWidth
+      / window.innerHeight
 
-  camera.updateProjectionMatrix()
+    camera.updateProjectionMatrix()
 
-  renderer.setSize(window.innerWidth, window.innerHeight)
+    renderer.setSize(
+      window.innerWidth,
+      window.innerHeight
+    )
 
-  renderer.setPixelRatio(
-    Math.min(window.devicePixelRatio, isMobile ? 1 : 1.5)
-  )
-})
+    renderer.setPixelRatio(
+      Math.min(
+        window.devicePixelRatio,
+        isMobile ? 1 : 1.5
+      )
+    )
+  }
+)
