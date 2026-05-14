@@ -103,6 +103,7 @@ document.body.appendChild(topMenu)
 // ======================================================
 
 const contentItems = [
+
   {
     type: 'video',
     path: '/videos/vid_01.MP4',
@@ -237,6 +238,7 @@ const contentItems = [
     caption: 'A contradiction between cleanup and attraction.',
     year: '2026'
   }
+
 ]
 
 // ======================================================
@@ -248,6 +250,7 @@ const textureCache = new Map()
 const videoElements = []
 
 function createImageTexture(path) {
+
   const texture = imageLoader.load(path)
 
   texture.colorSpace = THREE.SRGBColorSpace
@@ -259,6 +262,7 @@ function createImageTexture(path) {
 }
 
 function createVideoTexture(path) {
+
   const video = document.createElement('video')
 
   video.src = path
@@ -284,6 +288,7 @@ function createVideoTexture(path) {
 }
 
 function getTexture(item) {
+
   if (textureCache.has(item.path)) {
     return textureCache.get(item.path)
   }
@@ -301,9 +306,12 @@ function getTexture(item) {
 window.addEventListener(
   'pointerdown',
   () => {
+
     for (const video of videoElements) {
+
       video.play().catch(() => {})
     }
+
   },
   { once: true }
 )
@@ -317,6 +325,7 @@ const meshes = []
 const CARD_COUNT = isMobile ? 30 : 55
 
 for (let i = 0; i < CARD_COUNT; i++) {
+
   const item =
     contentItems[
       Math.floor(
@@ -380,6 +389,7 @@ const mouse =
 window.addEventListener(
   'click',
   (event) => {
+
     if (
       event.target.closest('#galleryOverlay') ||
       event.target.closest('#topMenu')
@@ -404,6 +414,7 @@ window.addEventListener(
       raycaster.intersectObjects(meshes)
 
     if (intersects.length > 0) {
+
       const item =
         intersects[0].object.userData
 
@@ -423,6 +434,7 @@ function showGallery(
   category,
   selectedPath
 ) {
+
   const old =
     document.getElementById(
       'galleryOverlay'
@@ -465,8 +477,10 @@ function showGallery(
     )
 
   function createCards(loopIndex) {
+
     return items
       .map((item) => {
+
         const isSelected =
           item.path === selectedPath &&
           loopIndex === 1
@@ -573,27 +587,33 @@ function showGallery(
     .addEventListener(
       'click',
       () => {
+
         overlay.remove()
+
       }
     )
 
   requestAnimationFrame(() => {
+
     const selected =
       document.getElementById(
         'selectedCard'
       )
 
     if (selected) {
+
       selected.scrollIntoView({
         behavior: 'instant',
         block: 'center'
       })
     }
+
   })
 
   overlay.addEventListener(
     'scroll',
     () => {
+
       const loop =
         overlay.querySelector('.gallery-loop')
 
@@ -606,14 +626,17 @@ function showGallery(
         overlay.scrollTop
         >= loopHeight * 2
       ) {
+
         overlay.scrollTop -= loopHeight
       }
 
       if (
         overlay.scrollTop <= 0
       ) {
+
         overlay.scrollTop += loopHeight
       }
+
     }
   )
 }
@@ -623,6 +646,7 @@ function showGallery(
 // ======================================================
 
 function injectGalleryCSS() {
+
   if (
     document.getElementById(
       'galleryStyle'
@@ -713,7 +737,7 @@ function injectGalleryCSS() {
 
     .gallery-wrap {
 
-      width: min(1500px, 96vw);
+      width: min(1360px, 94vw);
 
       margin: 0 auto;
 
@@ -784,9 +808,9 @@ function injectGalleryCSS() {
       display: grid;
 
       grid-template-columns:
-        1.7fr 0.45fr;
+        1.45fr 0.55fr;
 
-      gap: 32px;
+      gap: 34px;
 
       align-items: center;
 
@@ -800,7 +824,7 @@ function injectGalleryCSS() {
 
       width: 100%;
 
-      background: #f3f3f3;
+      background: transparent;
 
       border-radius: 0 !important;
 
@@ -816,11 +840,11 @@ function injectGalleryCSS() {
 
       height: auto;
 
-      max-height: 88vh;
+      max-height: 86vh;
 
       object-fit: contain;
 
-      background: #eee;
+      background: transparent;
 
       border-radius: 0 !important;
     }
@@ -979,6 +1003,7 @@ function injectGalleryCSS() {
 // ======================================================
 
 function animate() {
+
   requestAnimationFrame(animate)
 
   scene.rotation.y +=
@@ -989,6 +1014,7 @@ function animate() {
   controls.update()
 
   for (const mesh of meshes) {
+
     mesh.lookAt(camera.position)
   }
 
@@ -1004,6 +1030,7 @@ animate()
 window.addEventListener(
   'resize',
   () => {
+
     camera.aspect =
       window.innerWidth
       / window.innerHeight
