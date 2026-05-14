@@ -444,6 +444,8 @@ function showGallery(
     old.remove()
   }
 
+  topMenu.style.display = 'none'
+
   const overlay =
     document.createElement('div')
 
@@ -456,7 +458,7 @@ function showGallery(
   overlay.style.width = '100%'
   overlay.style.height = '100%'
 
-  overlay.style.zIndex = '9999'
+  overlay.style.zIndex = '20000'
 
   overlay.style.background = 'white'
 
@@ -590,6 +592,8 @@ function showGallery(
 
         overlay.remove()
 
+        topMenu.style.display = 'flex'
+
       }
     )
 
@@ -664,10 +668,10 @@ function injectGalleryCSS() {
 
       position: fixed;
 
-      top: 20px;
-      right: 20px;
+      top: 28px;
+      right: 42px;
 
-      z-index: 99999;
+      z-index: 9000;
 
       display: flex;
 
@@ -675,7 +679,7 @@ function injectGalleryCSS() {
 
       align-items: flex-end;
 
-      gap: 6px;
+      gap: 10px;
     }
 
     #topMenu button {
@@ -710,10 +714,10 @@ function injectGalleryCSS() {
 
       position: fixed;
 
-      top: 22px;
-      right: 22px;
+      top: 28px;
+      right: 42px;
 
-      z-index: 10000;
+      z-index: 30000;
 
       border: 1px solid black;
 
@@ -913,10 +917,10 @@ function injectGalleryCSS() {
 
       #topMenu {
 
-        top: 16px;
-        right: 16px;
+        top: 20px;
+        right: 24px;
 
-        gap: 4px;
+        gap: 8px;
       }
 
       #topMenu button {
@@ -926,8 +930,8 @@ function injectGalleryCSS() {
 
       #closeOverlay {
 
-        top: 16px;
-        right: 16px;
+        top: 20px;
+        right: 24px;
 
         padding: 10px 15px;
 
