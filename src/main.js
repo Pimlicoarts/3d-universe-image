@@ -35,7 +35,6 @@ const isMobile =
   /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
 
 const scene = new THREE.Scene()
-
 scene.background = new THREE.Color(0xffffff)
 
 const camera = new THREE.PerspectiveCamera(
@@ -76,6 +75,18 @@ controls.autoRotate = true
 controls.autoRotateSpeed = isMobile ? 0.025 : 0.05
 
 const imageLoader = new THREE.TextureLoader()
+
+// ======================================================
+// LEFT LOGO
+// ======================================================
+
+const leftLogo = document.createElement('img')
+
+leftLogo.id = 'leftLogo'
+leftLogo.src = '/PIM_LOGO.png'
+leftLogo.alt = 'Pimlico Arts'
+
+document.body.appendChild(leftLogo)
 
 // ======================================================
 // TOP MENU
@@ -392,7 +403,8 @@ window.addEventListener(
 
     if (
       event.target.closest('#galleryOverlay') ||
-      event.target.closest('#topMenu')
+      event.target.closest('#topMenu') ||
+      event.target.closest('#leftLogo')
     ) {
       return
     }
@@ -664,6 +676,25 @@ function injectGalleryCSS() {
 
   style.innerHTML = `
 
+    #leftLogo {
+
+      position: fixed;
+
+      left: 28px;
+      bottom: 28px;
+
+      width: 72px;
+      height: auto;
+
+      z-index: 9500;
+
+      opacity: 0.82;
+
+      pointer-events: none;
+
+      user-select: none;
+    }
+
     #topMenu {
 
       position: fixed;
@@ -915,6 +946,16 @@ function injectGalleryCSS() {
 
     @media (max-width: 768px) {
 
+      #leftLogo {
+
+        left: 18px;
+        bottom: 18px;
+
+        width: 52px;
+
+        opacity: 0.78;
+      }
+
       #topMenu {
 
         top: 20px;
@@ -1001,6 +1042,8 @@ function injectGalleryCSS() {
 
   document.head.appendChild(style)
 }
+
+injectGalleryCSS()
 
 // ======================================================
 // ANIMATE
