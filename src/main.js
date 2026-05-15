@@ -35,7 +35,6 @@ const isMobile =
   /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
 
 const scene = new THREE.Scene()
-
 scene.background = new THREE.Color(0xffffff)
 
 const camera = new THREE.PerspectiveCamera(
@@ -64,10 +63,7 @@ document.body.style.background = 'white'
 
 document.body.appendChild(renderer.domElement)
 
-const controls = new OrbitControls(
-  camera,
-  renderer.domElement
-)
+const controls = new OrbitControls(camera, renderer.domElement)
 
 controls.enableDamping = true
 controls.dampingFactor = 0.04
@@ -88,6 +84,36 @@ leftLogo.src = '/PIM_LOGO.png'
 leftLogo.alt = 'Pimlico Arts'
 
 document.body.appendChild(leftLogo)
+
+// ======================================================
+// SPHERE BUTTON
+// ======================================================
+
+const sphereButton = document.createElement('button')
+
+sphereButton.id = 'sphereButton'
+sphereButton.setAttribute('aria-label', 'Toggle sphere mode')
+
+sphereButton.innerHTML = `
+  <img src="/sphere_button.png" alt="Sphere" />
+`
+
+document.body.appendChild(sphereButton)
+
+let isSphereMode = false
+
+sphereButton.addEventListener('click', () => {
+  isSphereMode = !isSphereMode
+
+  sphereButton.classList.toggle('active', isSphereMode)
+
+  for (const mesh of meshes) {
+    mesh.userData.targetPosition =
+      isSphereMode
+        ? mesh.userData.spherePosition.clone()
+        : mesh.userData.universePosition.clone()
+  }
+})
 
 // ======================================================
 // TOP MENU
@@ -126,7 +152,6 @@ document.body.appendChild(topMenu)
 // ======================================================
 
 const contentItems = [
-
   {
     type: 'video',
     path: '/videos/vid_01.MP4',
@@ -261,7 +286,6 @@ const contentItems = [
     caption: 'A contradiction between cleanup and attraction.',
     year: '2026'
   }
-
 ]
 
 // ======================================================
@@ -269,15 +293,12 @@ const contentItems = [
 // ======================================================
 
 const textureCache = new Map()
-
 const videoElements = []
 
 function createImageTexture(path) {
-
   const texture = imageLoader.load(path)
 
   texture.colorSpace = THREE.SRGBColorSpace
-
   texture.minFilter = THREE.LinearFilter
   texture.magFilter = THREE.LinearFilter
 
@@ -285,11 +306,9 @@ function createImageTexture(path) {
 }
 
 function createVideoTexture(path) {
-
   const video = document.createElement('video')
 
   video.src = path
-
   video.loop = true
   video.muted = true
   video.autoplay = true
@@ -303,7 +322,6 @@ function createVideoTexture(path) {
   const texture = new THREE.VideoTexture(video)
 
   texture.colorSpace = THREE.SRGBColorSpace
-
   texture.minFilter = THREE.LinearFilter
   texture.magFilter = THREE.LinearFilter
 
@@ -311,7 +329,6 @@ function createVideoTexture(path) {
 }
 
 function getTexture(item) {
-
   if (textureCache.has(item.path)) {
     return textureCache.get(item.path)
   }
@@ -329,15 +346,50 @@ function getTexture(item) {
 window.addEventListener(
   'pointerdown',
   () => {
-
     for (const video of videoElements) {
-
       video.play().catch(() => {})
     }
-
   },
   { once: true }
 )
+
+// ======================================================
+// POSITION HELPERS
+// ======================================================
+
+function createUniversePosition() {
+  return new THREE.Vector3(
+    (Math.random() - 0.5) * 190,
+    (Math.random() - 0.5) * 190,
+    (Math.random() - 0.5) * 190
+  )
+}
+
+function createSpherePosition(index, total) {
+  const radius = isMobile ? 54 : 66
+
+  const goldenAngle = Math.PI * (3 - Math.sqrt(5))
+
+  const y =
+    1 - (index / Math.max(1, total - 1)) * 2
+
+  const sphereRadius =
+    Math.sqrt(1 - y * y)
+
+  const theta = goldenAngle * index
+
+  const x =
+    Math.cos(theta) * sphereRadius
+
+  const z =
+    Math.sin(theta) * sphereRadius
+
+  return new THREE.Vector3(
+    x * radius,
+    y * radius,
+    z * radius
+  )
+}
 
 // ======================================================
 // MESHES
@@ -348,7 +400,6 @@ const meshes = []
 const CARD_COUNT = isMobile ? 30 : 55
 
 for (let i = 0; i < CARD_COUNT; i++) {
-
   const item =
     contentItems[
       Math.floor(
@@ -374,25 +425,23 @@ for (let i = 0; i < CARD_COUNT; i++) {
       material
     )
 
-  mesh.position.x =
-    (Math.random() - 0.5) * 190
+  const universePosition =
+    createUniversePosition()
 
-  mesh.position.y =
-    (Math.random() - 0.5) * 190
+  const spherePosition =
+    createSpherePosition(i, CARD_COUNT)
 
-  mesh.position.z =
-    (Math.random() - 0.5) * 190
+  mesh.position.copy(universePosition)
 
   const scale =
     0.9 + Math.random() * 1.5
 
-  mesh.scale.set(
-    scale,
-    scale,
-    scale
-  )
+  mesh.scale.set(scale, scale, scale)
 
   mesh.userData = item
+  mesh.userData.universePosition = universePosition
+  mesh.userData.spherePosition = spherePosition
+  mesh.userData.targetPosition = universePosition.clone()
 
   scene.add(mesh)
 
@@ -412,11 +461,11 @@ const mouse =
 window.addEventListener(
   'click',
   (event) => {
-
     if (
       event.target.closest('#galleryOverlay') ||
       event.target.closest('#topMenu') ||
-      event.target.closest('#leftLogo')
+      event.target.closest('#leftLogo') ||
+      event.target.closest('#sphereButton')
     ) {
       return
     }
@@ -438,7 +487,6 @@ window.addEventListener(
       raycaster.intersectObjects(meshes)
 
     if (intersects.length > 0) {
-
       const item =
         intersects[0].object.userData
 
@@ -458,7 +506,6 @@ function showGallery(
   category,
   selectedPath
 ) {
-
   const old =
     document.getElementById(
       'galleryOverlay'
@@ -469,6 +516,7 @@ function showGallery(
   }
 
   topMenu.style.display = 'none'
+  sphereButton.style.display = 'none'
 
   const overlay =
     document.createElement('div')
@@ -503,10 +551,8 @@ function showGallery(
     )
 
   function createCards(loopIndex) {
-
     return items
       .map((item) => {
-
         const isSelected =
           item.path === selectedPath &&
           loopIndex === 1
@@ -613,35 +659,30 @@ function showGallery(
     .addEventListener(
       'click',
       () => {
-
         overlay.remove()
 
         topMenu.style.display = 'flex'
-
+        sphereButton.style.display = 'block'
       }
     )
 
   requestAnimationFrame(() => {
-
     const selected =
       document.getElementById(
         'selectedCard'
       )
 
     if (selected) {
-
       selected.scrollIntoView({
         behavior: 'instant',
         block: 'center'
       })
     }
-
   })
 
   overlay.addEventListener(
     'scroll',
     () => {
-
       const loop =
         overlay.querySelector('.gallery-loop')
 
@@ -654,17 +695,14 @@ function showGallery(
         overlay.scrollTop
         >= loopHeight * 2
       ) {
-
         overlay.scrollTop -= loopHeight
       }
 
       if (
         overlay.scrollTop <= 0
       ) {
-
         overlay.scrollTop += loopHeight
       }
-
     }
   )
 }
@@ -674,7 +712,6 @@ function showGallery(
 // ======================================================
 
 function injectGalleryCSS() {
-
   if (
     document.getElementById(
       'galleryStyle'
@@ -705,6 +742,61 @@ function injectGalleryCSS() {
       pointer-events: none;
 
       user-select: none;
+    }
+
+    #sphereButton {
+
+      position: fixed;
+
+      right: 42px;
+      bottom: 34px;
+
+      z-index: 9800;
+
+      width: 44px;
+      height: 44px;
+
+      padding: 0;
+
+      background: transparent;
+
+      border: none;
+
+      cursor: pointer;
+
+      opacity: 0.62;
+
+      transition:
+        opacity 0.2s ease,
+        transform 0.25s ease;
+
+      mix-blend-mode: multiply;
+    }
+
+    #sphereButton img {
+
+      display: block;
+
+      width: 100%;
+      height: 100%;
+
+      object-fit: contain;
+
+      pointer-events: none;
+    }
+
+    #sphereButton:hover {
+
+      opacity: 1;
+
+      transform: scale(1.08);
+    }
+
+    #sphereButton.active {
+
+      opacity: 1;
+
+      transform: rotate(45deg) scale(1.08);
     }
 
     #topMenu {
@@ -968,6 +1060,15 @@ function injectGalleryCSS() {
         opacity: 0.45;
       }
 
+      #sphereButton {
+
+        right: 24px;
+        bottom: 22px;
+
+        width: 38px;
+        height: 38px;
+      }
+
       #topMenu {
 
         top: 20px;
@@ -1062,7 +1163,6 @@ injectGalleryCSS()
 // ======================================================
 
 function animate() {
-
   requestAnimationFrame(animate)
 
   scene.rotation.y +=
@@ -1073,8 +1173,16 @@ function animate() {
   controls.update()
 
   for (const mesh of meshes) {
+    mesh.position.lerp(
+      mesh.userData.targetPosition,
+      0.045
+    )
 
-    mesh.lookAt(camera.position)
+    if (isSphereMode) {
+      mesh.lookAt(0, 0, 0)
+    } else {
+      mesh.lookAt(camera.position)
+    }
   }
 
   renderer.render(scene, camera)
@@ -1089,7 +1197,6 @@ animate()
 window.addEventListener(
   'resize',
   () => {
-
     camera.aspect =
       window.innerWidth
       / window.innerHeight
