@@ -652,15 +652,15 @@ function injectGalleryCSS() {
       width: min(68vw, 920px);
       height: auto;
 
-      z-index: 8500;
+      z-index: 12000;
 
-      opacity: 0.12;
+      opacity: 0.055;
 
       pointer-events: none;
 
       user-select: none;
 
-      mix-blend-mode: multiply;
+      mix-blend-mode: normal;
     }
 
     #topMenu {
@@ -669,7 +669,7 @@ function injectGalleryCSS() {
       top: 28px;
       right: 42px;
 
-      z-index: 9000;
+      z-index: 13000;
 
       display: flex;
 
@@ -908,7 +908,9 @@ function injectGalleryCSS() {
       #underConstruction {
         width: 86vw;
 
-        opacity: 0.12;
+        opacity: 0.05;
+
+        z-index: 12000;
       }
 
       #topMenu {
