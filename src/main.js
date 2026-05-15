@@ -35,26 +35,33 @@ const isMobile =
   /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
 
 const scene = new THREE.Scene()
+
 scene.background = new THREE.Color(0xffffff)
 
 const camera = new THREE.PerspectiveCamera(
   75,
   window.innerWidth / window.innerHeight,
   0.1,
-  2000
+  3000
 )
 
-camera.position.z = isMobile ? 70 : 45
+camera.position.z = isMobile ? 88 : 62
 
 const renderer = new THREE.WebGLRenderer({
   antialias: !isMobile,
   alpha: false
 })
 
-renderer.setSize(window.innerWidth, window.innerHeight)
+renderer.setSize(
+  window.innerWidth,
+  window.innerHeight
+)
 
 renderer.setPixelRatio(
-  Math.min(window.devicePixelRatio, isMobile ? 1 : 1.5)
+  Math.min(
+    window.devicePixelRatio,
+    isMobile ? 1 : 1.5
+  )
 )
 
 document.body.style.margin = '0'
@@ -63,24 +70,33 @@ document.body.style.background = 'white'
 
 document.body.appendChild(renderer.domElement)
 
-const controls = new OrbitControls(camera, renderer.domElement)
+const controls = new OrbitControls(
+  camera,
+  renderer.domElement
+)
 
 controls.enableDamping = true
 controls.dampingFactor = 0.04
 
 controls.autoRotate = true
-controls.autoRotateSpeed = isMobile ? 0.025 : 0.05
 
-const imageLoader = new THREE.TextureLoader()
+controls.autoRotateSpeed =
+  isMobile ? 0.025 : 0.05
+
+const imageLoader =
+  new THREE.TextureLoader()
 
 // ======================================================
 // LEFT LOGO
 // ======================================================
 
-const leftLogo = document.createElement('img')
+const leftLogo =
+  document.createElement('img')
 
 leftLogo.id = 'leftLogo'
+
 leftLogo.src = '/PIM_LOGO.png'
+
 leftLogo.alt = 'Pimlico Arts'
 
 document.body.appendChild(leftLogo)
@@ -89,37 +105,50 @@ document.body.appendChild(leftLogo)
 // SPHERE BUTTON
 // ======================================================
 
-const sphereButton = document.createElement('button')
+const sphereButton =
+  document.createElement('button')
 
 sphereButton.id = 'sphereButton'
-sphereButton.setAttribute('aria-label', 'Toggle sphere mode')
 
 sphereButton.innerHTML = `
-  <img src="/sphere_button.png" alt="Sphere" />
+  <img
+    src="/sphere_button.png"
+    alt="Sphere"
+  />
 `
 
 document.body.appendChild(sphereButton)
 
 let isSphereMode = false
 
-sphereButton.addEventListener('click', () => {
-  isSphereMode = !isSphereMode
+sphereButton.addEventListener(
+  'click',
+  () => {
 
-  sphereButton.classList.toggle('active', isSphereMode)
+    isSphereMode = !isSphereMode
 
-  for (const mesh of meshes) {
-    mesh.userData.targetPosition =
+    sphereButton.classList.toggle(
+      'active',
       isSphereMode
-        ? mesh.userData.spherePosition.clone()
-        : mesh.userData.universePosition.clone()
+    )
+
+    for (const mesh of meshes) {
+
+      mesh.userData.targetPosition =
+        isSphereMode
+          ? mesh.userData.spherePosition.clone()
+          : mesh.userData.universePosition.clone()
+    }
+
   }
-})
+)
 
 // ======================================================
 // TOP MENU
 // ======================================================
 
-const topMenu = document.createElement('div')
+const topMenu =
+  document.createElement('div')
 
 topMenu.id = 'topMenu'
 
@@ -152,6 +181,7 @@ document.body.appendChild(topMenu)
 // ======================================================
 
 const contentItems = [
+
   {
     type: 'video',
     path: '/videos/vid_01.MP4',
@@ -286,6 +316,7 @@ const contentItems = [
     caption: 'A contradiction between cleanup and attraction.',
     year: '2026'
   }
+
 ]
 
 // ======================================================
@@ -293,22 +324,33 @@ const contentItems = [
 // ======================================================
 
 const textureCache = new Map()
+
 const videoElements = []
 
 function createImageTexture(path) {
-  const texture = imageLoader.load(path)
 
-  texture.colorSpace = THREE.SRGBColorSpace
-  texture.minFilter = THREE.LinearFilter
-  texture.magFilter = THREE.LinearFilter
+  const texture =
+    imageLoader.load(path)
+
+  texture.colorSpace =
+    THREE.SRGBColorSpace
+
+  texture.minFilter =
+    THREE.LinearFilter
+
+  texture.magFilter =
+    THREE.LinearFilter
 
   return texture
 }
 
 function createVideoTexture(path) {
-  const video = document.createElement('video')
+
+  const video =
+    document.createElement('video')
 
   video.src = path
+
   video.loop = true
   video.muted = true
   video.autoplay = true
@@ -319,17 +361,25 @@ function createVideoTexture(path) {
 
   videoElements.push(video)
 
-  const texture = new THREE.VideoTexture(video)
+  const texture =
+    new THREE.VideoTexture(video)
 
-  texture.colorSpace = THREE.SRGBColorSpace
-  texture.minFilter = THREE.LinearFilter
-  texture.magFilter = THREE.LinearFilter
+  texture.colorSpace =
+    THREE.SRGBColorSpace
+
+  texture.minFilter =
+    THREE.LinearFilter
+
+  texture.magFilter =
+    THREE.LinearFilter
 
   return texture
 }
 
 function getTexture(item) {
+
   if (textureCache.has(item.path)) {
+
     return textureCache.get(item.path)
   }
 
@@ -338,7 +388,10 @@ function getTexture(item) {
       ? createVideoTexture(item.path)
       : createImageTexture(item.path)
 
-  textureCache.set(item.path, texture)
+  textureCache.set(
+    item.path,
+    texture
+  )
 
   return texture
 }
@@ -346,9 +399,12 @@ function getTexture(item) {
 window.addEventListener(
   'pointerdown',
   () => {
+
     for (const video of videoElements) {
+
       video.play().catch(() => {})
     }
+
   },
   { once: true }
 )
@@ -358,17 +414,24 @@ window.addEventListener(
 // ======================================================
 
 function createUniversePosition() {
+
   return new THREE.Vector3(
-    (Math.random() - 0.5) * 190,
-    (Math.random() - 0.5) * 190,
-    (Math.random() - 0.5) * 190
+    (Math.random() - 0.5) * 220,
+    (Math.random() - 0.5) * 220,
+    (Math.random() - 0.5) * 220
   )
 }
 
-function createSpherePosition(index, total) {
-  const radius = isMobile ? 54 : 66
+function createSpherePosition(
+  index,
+  total
+) {
 
-  const goldenAngle = Math.PI * (3 - Math.sqrt(5))
+  const radius =
+    isMobile ? 64 : 86
+
+  const goldenAngle =
+    Math.PI * (3 - Math.sqrt(5))
 
   const y =
     1 - (index / Math.max(1, total - 1)) * 2
@@ -376,7 +439,8 @@ function createSpherePosition(index, total) {
   const sphereRadius =
     Math.sqrt(1 - y * y)
 
-  const theta = goldenAngle * index
+  const theta =
+    goldenAngle * index
 
   const x =
     Math.cos(theta) * sphereRadius
@@ -397,9 +461,11 @@ function createSpherePosition(index, total) {
 
 const meshes = []
 
-const CARD_COUNT = isMobile ? 30 : 55
+const CARD_COUNT =
+  isMobile ? 50 : 120
 
 for (let i = 0; i < CARD_COUNT; i++) {
+
   const item =
     contentItems[
       Math.floor(
@@ -407,10 +473,14 @@ for (let i = 0; i < CARD_COUNT; i++) {
       )
     ]
 
-  const texture = getTexture(item)
+  const texture =
+    getTexture(item)
 
   const geometry =
-    new THREE.PlaneGeometry(5, 5)
+    new THREE.PlaneGeometry(
+      5,
+      5
+    )
 
   const material =
     new THREE.MeshBasicMaterial({
@@ -429,19 +499,34 @@ for (let i = 0; i < CARD_COUNT; i++) {
     createUniversePosition()
 
   const spherePosition =
-    createSpherePosition(i, CARD_COUNT)
+    createSpherePosition(
+      i,
+      CARD_COUNT
+    )
 
-  mesh.position.copy(universePosition)
+  mesh.position.copy(
+    universePosition
+  )
 
   const scale =
     0.9 + Math.random() * 1.5
 
-  mesh.scale.set(scale, scale, scale)
+  mesh.scale.set(
+    scale,
+    scale,
+    scale
+  )
 
   mesh.userData = item
-  mesh.userData.universePosition = universePosition
-  mesh.userData.spherePosition = spherePosition
-  mesh.userData.targetPosition = universePosition.clone()
+
+  mesh.userData.universePosition =
+    universePosition
+
+  mesh.userData.spherePosition =
+    spherePosition
+
+  mesh.userData.targetPosition =
+    universePosition.clone()
 
   scene.add(mesh)
 
@@ -461,6 +546,7 @@ const mouse =
 window.addEventListener(
   'click',
   (event) => {
+
     if (
       event.target.closest('#galleryOverlay') ||
       event.target.closest('#topMenu') ||
@@ -487,6 +573,7 @@ window.addEventListener(
       raycaster.intersectObjects(meshes)
 
     if (intersects.length > 0) {
+
       const item =
         intersects[0].object.userData
 
@@ -495,6 +582,7 @@ window.addEventListener(
         item.path
       )
     }
+
   }
 )
 
@@ -506,6 +594,7 @@ function showGallery(
   category,
   selectedPath
 ) {
+
   const old =
     document.getElementById(
       'galleryOverlay'
@@ -516,6 +605,7 @@ function showGallery(
   }
 
   topMenu.style.display = 'none'
+
   sphereButton.style.display = 'none'
 
   const overlay =
@@ -538,7 +628,8 @@ function showGallery(
 
   overlay.style.overflowY = 'scroll'
 
-  overlay.style.WebkitOverflowScrolling = 'touch'
+  overlay.style.WebkitOverflowScrolling =
+    'touch'
 
   document.body.appendChild(overlay)
 
@@ -551,8 +642,10 @@ function showGallery(
     )
 
   function createCards(loopIndex) {
+
     return items
       .map((item) => {
+
         const isSelected =
           item.path === selectedPath &&
           loopIndex === 1
@@ -659,30 +752,37 @@ function showGallery(
     .addEventListener(
       'click',
       () => {
+
         overlay.remove()
 
         topMenu.style.display = 'flex'
+
         sphereButton.style.display = 'block'
+
       }
     )
 
   requestAnimationFrame(() => {
+
     const selected =
       document.getElementById(
         'selectedCard'
       )
 
     if (selected) {
+
       selected.scrollIntoView({
         behavior: 'instant',
         block: 'center'
       })
     }
+
   })
 
   overlay.addEventListener(
     'scroll',
     () => {
+
       const loop =
         overlay.querySelector('.gallery-loop')
 
@@ -692,17 +792,19 @@ function showGallery(
         loop.offsetHeight
 
       if (
-        overlay.scrollTop
-        >= loopHeight * 2
+        overlay.scrollTop >= loopHeight * 2
       ) {
+
         overlay.scrollTop -= loopHeight
       }
 
       if (
         overlay.scrollTop <= 0
       ) {
+
         overlay.scrollTop += loopHeight
       }
+
     }
   )
 }
@@ -712,6 +814,7 @@ function showGallery(
 // ======================================================
 
 function injectGalleryCSS() {
+
   if (
     document.getElementById(
       'galleryStyle'
@@ -796,7 +899,9 @@ function injectGalleryCSS() {
 
       opacity: 1;
 
-      transform: rotate(45deg) scale(1.08);
+      transform:
+        rotate(45deg)
+        scale(1.08);
     }
 
     #topMenu {
@@ -1163,6 +1268,7 @@ injectGalleryCSS()
 // ======================================================
 
 function animate() {
+
   requestAnimationFrame(animate)
 
   scene.rotation.y +=
@@ -1173,16 +1279,21 @@ function animate() {
   controls.update()
 
   for (const mesh of meshes) {
+
     mesh.position.lerp(
       mesh.userData.targetPosition,
       0.045
     )
 
     if (isSphereMode) {
+
       mesh.lookAt(0, 0, 0)
+
     } else {
+
       mesh.lookAt(camera.position)
     }
+
   }
 
   renderer.render(scene, camera)
@@ -1197,9 +1308,10 @@ animate()
 window.addEventListener(
   'resize',
   () => {
+
     camera.aspect =
-      window.innerWidth
-      / window.innerHeight
+      window.innerWidth /
+      window.innerHeight
 
     camera.updateProjectionMatrix()
 
@@ -1214,5 +1326,6 @@ window.addEventListener(
         isMobile ? 1 : 1.5
       )
     )
+
   }
 )
