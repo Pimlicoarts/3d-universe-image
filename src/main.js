@@ -42,26 +42,20 @@ const camera = new THREE.PerspectiveCamera(
   75,
   window.innerWidth / window.innerHeight,
   0.1,
-  3000
+  2000
 )
 
-camera.position.z = isMobile ? 96 : 78
+camera.position.z = isMobile ? 70 : 45
 
 const renderer = new THREE.WebGLRenderer({
   antialias: !isMobile,
   alpha: false
 })
 
-renderer.setSize(
-  window.innerWidth,
-  window.innerHeight
-)
+renderer.setSize(window.innerWidth, window.innerHeight)
 
 renderer.setPixelRatio(
-  Math.min(
-    window.devicePixelRatio,
-    isMobile ? 1 : 1.5
-  )
+  Math.min(window.devicePixelRatio, isMobile ? 1 : 1.5)
 )
 
 document.body.style.margin = '0'
@@ -70,85 +64,33 @@ document.body.style.background = 'white'
 
 document.body.appendChild(renderer.domElement)
 
-const controls = new OrbitControls(
-  camera,
-  renderer.domElement
-)
+const controls = new OrbitControls(camera, renderer.domElement)
 
 controls.enableDamping = true
 controls.dampingFactor = 0.04
 
 controls.autoRotate = true
+controls.autoRotateSpeed = isMobile ? 0.025 : 0.05
 
-controls.autoRotateSpeed =
-  isMobile ? 0.025 : 0.05
-
-const imageLoader =
-  new THREE.TextureLoader()
+const imageLoader = new THREE.TextureLoader()
 
 // ======================================================
 // LEFT LOGO
 // ======================================================
 
-const leftLogo =
-  document.createElement('img')
+const leftLogo = document.createElement('img')
 
 leftLogo.id = 'leftLogo'
-
 leftLogo.src = '/PIM_LOGO.png'
-
 leftLogo.alt = 'Pimlico Arts'
 
 document.body.appendChild(leftLogo)
 
 // ======================================================
-// SPHERE BUTTON
-// ======================================================
-
-const sphereButton =
-  document.createElement('button')
-
-sphereButton.id = 'sphereButton'
-
-sphereButton.innerHTML = `
-  <img
-    src="/sphere_button.png"
-    alt="Sphere"
-  />
-`
-
-document.body.appendChild(sphereButton)
-
-let isSphereMode = false
-
-sphereButton.addEventListener(
-  'click',
-  () => {
-
-    isSphereMode = !isSphereMode
-
-    sphereButton.classList.toggle(
-      'active',
-      isSphereMode
-    )
-
-    for (const mesh of meshes) {
-
-      mesh.userData.targetPosition =
-        isSphereMode
-          ? mesh.userData.spherePosition.clone()
-          : mesh.userData.universePosition.clone()
-    }
-
-  }
-)
-
-// ======================================================
 // TOP MENU
 // ======================================================
 
-const topMenu =
-  document.createElement('div')
+const topMenu = document.createElement('div')
 
 topMenu.id = 'topMenu'
 
@@ -329,25 +271,19 @@ const videoElements = []
 
 function createImageTexture(path) {
 
-  const texture =
-    imageLoader.load(path)
+  const texture = imageLoader.load(path)
 
-  texture.colorSpace =
-    THREE.SRGBColorSpace
+  texture.colorSpace = THREE.SRGBColorSpace
 
-  texture.minFilter =
-    THREE.LinearFilter
-
-  texture.magFilter =
-    THREE.LinearFilter
+  texture.minFilter = THREE.LinearFilter
+  texture.magFilter = THREE.LinearFilter
 
   return texture
 }
 
 function createVideoTexture(path) {
 
-  const video =
-    document.createElement('video')
+  const video = document.createElement('video')
 
   video.src = path
 
@@ -361,17 +297,12 @@ function createVideoTexture(path) {
 
   videoElements.push(video)
 
-  const texture =
-    new THREE.VideoTexture(video)
+  const texture = new THREE.VideoTexture(video)
 
-  texture.colorSpace =
-    THREE.SRGBColorSpace
+  texture.colorSpace = THREE.SRGBColorSpace
 
-  texture.minFilter =
-    THREE.LinearFilter
-
-  texture.magFilter =
-    THREE.LinearFilter
+  texture.minFilter = THREE.LinearFilter
+  texture.magFilter = THREE.LinearFilter
 
   return texture
 }
@@ -379,7 +310,6 @@ function createVideoTexture(path) {
 function getTexture(item) {
 
   if (textureCache.has(item.path)) {
-
     return textureCache.get(item.path)
   }
 
@@ -388,10 +318,7 @@ function getTexture(item) {
       ? createVideoTexture(item.path)
       : createImageTexture(item.path)
 
-  textureCache.set(
-    item.path,
-    texture
-  )
+  textureCache.set(item.path, texture)
 
   return texture
 }
@@ -401,7 +328,6 @@ window.addEventListener(
   () => {
 
     for (const video of videoElements) {
-
       video.play().catch(() => {})
     }
 
@@ -410,148 +336,43 @@ window.addEventListener(
 )
 
 // ======================================================
-// POSITION HELPERS
-// ======================================================
-
-function createUniversePosition() {
-
-  const range =
-    isMobile ? 270 : 420
-
-  return new THREE.Vector3(
-    (Math.random() - 0.5) * range,
-    (Math.random() - 0.5) * range,
-    (Math.random() - 0.5) * range
-  )
-}
-
-function createSpherePosition(
-  index,
-  total
-) {
-
-  const radius =
-    isMobile ? 70 : 96
-
-  const goldenAngle =
-    Math.PI * (3 - Math.sqrt(5))
-
-  const y =
-    1 - (index / Math.max(1, total - 1)) * 2
-
-  const sphereRadius =
-    Math.sqrt(1 - y * y)
-
-  const theta =
-    goldenAngle * index
-
-  const x =
-    Math.cos(theta) * sphereRadius
-
-  const z =
-    Math.sin(theta) * sphereRadius
-
-  return new THREE.Vector3(
-    x * radius,
-    y * radius,
-    z * radius
-  )
-}
-
-// ======================================================
 // MESHES
 // ======================================================
 
 const meshes = []
 
-const CARD_COUNT =
-  isMobile ? 50 : 120
+const CARD_COUNT = isMobile ? 30 : 55
 
 for (let i = 0; i < CARD_COUNT; i++) {
 
   const item =
     contentItems[
-      i % contentItems.length
+      Math.floor(
+        Math.random() * contentItems.length
+      )
     ]
 
-  const texture =
-    getTexture(item)
+  const texture = getTexture(item)
 
-  const geometry =
-    new THREE.PlaneGeometry(
-      5,
-      5
-    )
+  const geometry = new THREE.PlaneGeometry(5, 5)
 
-  const material =
-    new THREE.MeshBasicMaterial({
-      map: texture,
-      transparent: true,
-      side: THREE.DoubleSide
-    })
+  const material = new THREE.MeshBasicMaterial({
+    map: texture,
+    transparent: true,
+    side: THREE.DoubleSide
+  })
 
-  const mesh =
-    new THREE.Mesh(
-      geometry,
-      material
-    )
+  const mesh = new THREE.Mesh(geometry, material)
 
-  const universePosition =
-    createUniversePosition()
+  mesh.position.x = (Math.random() - 0.5) * 190
+  mesh.position.y = (Math.random() - 0.5) * 190
+  mesh.position.z = (Math.random() - 0.5) * 190
 
-  const spherePosition =
-    createSpherePosition(
-      i,
-      CARD_COUNT
-    )
+  const scale = 0.9 + Math.random() * 1.5
 
-  mesh.position.copy(
-    universePosition
-  )
-
-  const baseScale =
-    isMobile
-      ? 0.58 + Math.random() * 0.95
-      : 0.62 + Math.random() * 1.05
-
-  const originalScale =
-    new THREE.Vector3(
-      baseScale,
-      baseScale,
-      baseScale
-    )
-
-  const sphereScaleValue =
-    isMobile ? 0.68 : 0.72
-
-  const sphereScale =
-    new THREE.Vector3(
-      sphereScaleValue,
-      sphereScaleValue,
-      sphereScaleValue
-    )
-
-  mesh.scale.copy(originalScale)
+  mesh.scale.set(scale, scale, scale)
 
   mesh.userData = item
-
-  mesh.userData.universePosition =
-    universePosition
-
-  mesh.userData.spherePosition =
-    spherePosition
-
-  mesh.userData.targetPosition =
-    universePosition.clone()
-
-  mesh.userData.originalScale =
-    originalScale
-
-  mesh.userData.sphereScale =
-    sphereScale
-
-  mesh.userData.targetScale =
-    originalScale.clone()
 
   scene.add(mesh)
 
@@ -562,11 +383,9 @@ for (let i = 0; i < CARD_COUNT; i++) {
 // CLICK
 // ======================================================
 
-const raycaster =
-  new THREE.Raycaster()
+const raycaster = new THREE.Raycaster()
 
-const mouse =
-  new THREE.Vector2()
+const mouse = new THREE.Vector2()
 
 window.addEventListener(
   'click',
@@ -575,8 +394,7 @@ window.addEventListener(
     if (
       event.target.closest('#galleryOverlay') ||
       event.target.closest('#topMenu') ||
-      event.target.closest('#leftLogo') ||
-      event.target.closest('#sphereButton')
+      event.target.closest('#leftLogo')
     ) {
       return
     }
@@ -589,25 +407,16 @@ window.addEventListener(
       -(event.clientY / window.innerHeight)
       * 2 + 1
 
-    raycaster.setFromCamera(
-      mouse,
-      camera
-    )
+    raycaster.setFromCamera(mouse, camera)
 
-    const intersects =
-      raycaster.intersectObjects(meshes)
+    const intersects = raycaster.intersectObjects(meshes)
 
     if (intersects.length > 0) {
 
-      const item =
-        intersects[0].object.userData
+      const item = intersects[0].object.userData
 
-      showGallery(
-        item.category,
-        item.path
-      )
+      showGallery(item.category, item.path)
     }
-
   }
 )
 
@@ -615,15 +424,10 @@ window.addEventListener(
 // GALLERY
 // ======================================================
 
-function showGallery(
-  category,
-  selectedPath
-) {
+function showGallery(category, selectedPath) {
 
   const old =
-    document.getElementById(
-      'galleryOverlay'
-    )
+    document.getElementById('galleryOverlay')
 
   if (old) {
     old.remove()
@@ -631,30 +435,20 @@ function showGallery(
 
   topMenu.style.display = 'none'
 
-  sphereButton.style.display = 'none'
-
-  const overlay =
-    document.createElement('div')
+  const overlay = document.createElement('div')
 
   overlay.id = 'galleryOverlay'
 
   overlay.style.position = 'fixed'
   overlay.style.top = '0'
   overlay.style.left = '0'
-
   overlay.style.width = '100%'
   overlay.style.height = '100%'
-
   overlay.style.zIndex = '20000'
-
   overlay.style.background = 'white'
-
   overlay.style.color = 'black'
-
   overlay.style.overflowY = 'scroll'
-
-  overlay.style.WebkitOverflowScrolling =
-    'touch'
+  overlay.style.WebkitOverflowScrolling = 'touch'
 
   document.body.appendChild(overlay)
 
@@ -782,17 +576,13 @@ function showGallery(
 
         topMenu.style.display = 'flex'
 
-        sphereButton.style.display = 'block'
-
       }
     )
 
   requestAnimationFrame(() => {
 
     const selected =
-      document.getElementById(
-        'selectedCard'
-      )
+      document.getElementById('selectedCard')
 
     if (selected) {
 
@@ -841,9 +631,7 @@ function showGallery(
 function injectGalleryCSS() {
 
   if (
-    document.getElementById(
-      'galleryStyle'
-    )
+    document.getElementById('galleryStyle')
   ) return
 
   const style =
@@ -870,63 +658,6 @@ function injectGalleryCSS() {
       pointer-events: none;
 
       user-select: none;
-    }
-
-    #sphereButton {
-
-      position: fixed;
-
-      right: 42px;
-      bottom: 34px;
-
-      z-index: 9800;
-
-      width: 44px;
-      height: 44px;
-
-      padding: 0;
-
-      background: transparent;
-
-      border: none;
-
-      cursor: pointer;
-
-      opacity: 0.62;
-
-      transition:
-        opacity 0.2s ease,
-        transform 0.25s ease;
-
-      mix-blend-mode: multiply;
-    }
-
-    #sphereButton img {
-
-      display: block;
-
-      width: 100%;
-      height: 100%;
-
-      object-fit: contain;
-
-      pointer-events: none;
-    }
-
-    #sphereButton:hover {
-
-      opacity: 1;
-
-      transform: scale(1.08);
-    }
-
-    #sphereButton.active {
-
-      opacity: 1;
-
-      transform:
-        rotate(45deg)
-        scale(1.08);
     }
 
     #topMenu {
@@ -1190,15 +921,6 @@ function injectGalleryCSS() {
         opacity: 0.45;
       }
 
-      #sphereButton {
-
-        right: 24px;
-        bottom: 22px;
-
-        width: 38px;
-        height: 38px;
-      }
-
       #topMenu {
 
         top: 20px;
@@ -1305,30 +1027,7 @@ function animate() {
 
   for (const mesh of meshes) {
 
-    mesh.position.lerp(
-      mesh.userData.targetPosition,
-      0.045
-    )
-
-    mesh.userData.targetScale =
-      isSphereMode
-        ? mesh.userData.sphereScale
-        : mesh.userData.originalScale
-
-    mesh.scale.lerp(
-      mesh.userData.targetScale,
-      0.08
-    )
-
-    if (isSphereMode) {
-
-      mesh.lookAt(0, 0, 0)
-
-    } else {
-
-      mesh.lookAt(camera.position)
-    }
-
+    mesh.lookAt(camera.position)
   }
 
   renderer.render(scene, camera)
@@ -1345,8 +1044,7 @@ window.addEventListener(
   () => {
 
     camera.aspect =
-      window.innerWidth /
-      window.innerHeight
+      window.innerWidth / window.innerHeight
 
     camera.updateProjectionMatrix()
 
@@ -1361,6 +1059,5 @@ window.addEventListener(
         isMobile ? 1 : 1.5
       )
     )
-
   }
 )
