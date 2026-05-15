@@ -35,6 +35,7 @@ const isMobile =
   /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
 
 const scene = new THREE.Scene()
+
 scene.background = new THREE.Color(0xffffff)
 
 const camera = new THREE.PerspectiveCamera(
@@ -86,16 +87,15 @@ leftLogo.alt = 'Pimlico Arts'
 document.body.appendChild(leftLogo)
 
 // ======================================================
-// UNDER CONSTRUCTION WATERMARK
+// UNDER CONSTRUCTION TEXT
 // ======================================================
 
-const underConstruction = document.createElement('img')
+const underConstructionText = document.createElement('div')
 
-underConstruction.id = 'underConstruction'
-underConstruction.src = '/UNDERCONSTRUCTION.png'
-underConstruction.alt = 'Under Construction'
+underConstructionText.id = 'underConstructionText'
+underConstructionText.textContent = 'UNDERCONSTRUCTION'
 
-document.body.appendChild(underConstruction)
+document.body.appendChild(underConstructionText)
 
 // ======================================================
 // TOP MENU
@@ -134,6 +134,7 @@ document.body.appendChild(topMenu)
 // ======================================================
 
 const contentItems = [
+
   {
     type: 'video',
     path: '/videos/vid_01.MP4',
@@ -268,6 +269,7 @@ const contentItems = [
     caption: 'A contradiction between cleanup and attraction.',
     year: '2026'
   }
+
 ]
 
 // ======================================================
@@ -275,9 +277,11 @@ const contentItems = [
 // ======================================================
 
 const textureCache = new Map()
+
 const videoElements = []
 
 function createImageTexture(path) {
+
   const texture = imageLoader.load(path)
 
   texture.colorSpace = THREE.SRGBColorSpace
@@ -289,6 +293,7 @@ function createImageTexture(path) {
 }
 
 function createVideoTexture(path) {
+
   const video = document.createElement('video')
 
   video.src = path
@@ -314,6 +319,7 @@ function createVideoTexture(path) {
 }
 
 function getTexture(item) {
+
   if (textureCache.has(item.path)) {
     return textureCache.get(item.path)
   }
@@ -331,9 +337,11 @@ function getTexture(item) {
 window.addEventListener(
   'pointerdown',
   () => {
+
     for (const video of videoElements) {
       video.play().catch(() => {})
     }
+
   },
   { once: true }
 )
@@ -347,6 +355,7 @@ const meshes = []
 const CARD_COUNT = isMobile ? 30 : 55
 
 for (let i = 0; i < CARD_COUNT; i++) {
+
   const item =
     contentItems[
       Math.floor(
@@ -386,16 +395,18 @@ for (let i = 0; i < CARD_COUNT; i++) {
 // ======================================================
 
 const raycaster = new THREE.Raycaster()
+
 const mouse = new THREE.Vector2()
 
 window.addEventListener(
   'click',
   (event) => {
+
     if (
       event.target.closest('#galleryOverlay') ||
       event.target.closest('#topMenu') ||
       event.target.closest('#leftLogo') ||
-      event.target.closest('#underConstruction')
+      event.target.closest('#underConstructionText')
     ) {
       return
     }
@@ -413,6 +424,7 @@ window.addEventListener(
     const intersects = raycaster.intersectObjects(meshes)
 
     if (intersects.length > 0) {
+
       const item = intersects[0].object.userData
 
       showGallery(item.category, item.path)
@@ -425,6 +437,7 @@ window.addEventListener(
 // ======================================================
 
 function showGallery(category, selectedPath) {
+
   const old =
     document.getElementById('galleryOverlay')
 
@@ -433,7 +446,8 @@ function showGallery(category, selectedPath) {
   }
 
   topMenu.style.display = 'none'
-  underConstruction.style.display = 'none'
+
+  underConstructionText.style.display = 'none'
 
   const overlay = document.createElement('div')
 
@@ -461,14 +475,17 @@ function showGallery(category, selectedPath) {
     )
 
   function createCards(loopIndex) {
+
     return items
       .map((item) => {
+
         const isSelected =
           item.path === selectedPath &&
           loopIndex === 1
 
         const mediaHTML =
           item.type === 'video'
+
             ? `
               <video
                 src="${item.path}"
@@ -480,11 +497,13 @@ function showGallery(category, selectedPath) {
                 preload="auto"
               ></video>
             `
+
             : `
               <img src="${item.path}" />
             `
 
         return `
+
           <article
             class="gallery-card"
             ${isSelected ? 'id="selectedCard"' : ''}
@@ -515,12 +534,14 @@ function showGallery(category, selectedPath) {
             </div>
 
           </article>
+
         `
       })
       .join('')
   }
 
   overlay.innerHTML = `
+
     <button id="closeOverlay">
       CLOSE
     </button>
@@ -556,6 +577,7 @@ function showGallery(category, selectedPath) {
       </div>
 
     </section>
+
   `
 
   document
@@ -563,28 +585,35 @@ function showGallery(category, selectedPath) {
     .addEventListener(
       'click',
       () => {
+
         overlay.remove()
 
         topMenu.style.display = 'flex'
-        underConstruction.style.display = 'block'
+
+        underConstructionText.style.display = 'block'
+
       }
     )
 
   requestAnimationFrame(() => {
+
     const selected =
       document.getElementById('selectedCard')
 
     if (selected) {
+
       selected.scrollIntoView({
         behavior: 'instant',
         block: 'center'
       })
     }
+
   })
 
   overlay.addEventListener(
     'scroll',
     () => {
+
       const loop =
         overlay.querySelector('.gallery-loop')
 
@@ -596,14 +625,17 @@ function showGallery(category, selectedPath) {
       if (
         overlay.scrollTop >= loopHeight * 2
       ) {
+
         overlay.scrollTop -= loopHeight
       }
 
       if (
         overlay.scrollTop <= 0
       ) {
+
         overlay.scrollTop += loopHeight
       }
+
     }
   )
 }
@@ -613,6 +645,7 @@ function showGallery(category, selectedPath) {
 // ======================================================
 
 function injectGalleryCSS() {
+
   if (
     document.getElementById('galleryStyle')
   ) return
@@ -623,7 +656,9 @@ function injectGalleryCSS() {
   style.id = 'galleryStyle'
 
   style.innerHTML = `
+
     #leftLogo {
+
       position: fixed;
 
       left: 28px;
@@ -641,20 +676,37 @@ function injectGalleryCSS() {
       user-select: none;
     }
 
-    #underConstruction {
+    #underConstructionText {
+
       position: fixed;
 
       left: 50%;
       top: 50%;
 
-      transform: translate(-50%, -50%);
+      transform:
+        translate(-50%, -50%);
 
-      width: min(68vw, 920px);
-      height: auto;
+      z-index: 18000;
 
-      z-index: 12000;
+      font-family:
+        'FrutigerLight',
+        'FrutigerRoman',
+        sans-serif;
 
-      opacity: 0.055;
+      font-size:
+        clamp(54px, 11vw, 190px);
+
+      font-weight: 300;
+
+      line-height: 0.82;
+
+      letter-spacing: -0.08em;
+
+      color: rgba(0, 0, 0, 0.16);
+
+      text-align: center;
+
+      white-space: nowrap;
 
       pointer-events: none;
 
@@ -664,12 +716,13 @@ function injectGalleryCSS() {
     }
 
     #topMenu {
+
       position: fixed;
 
       top: 28px;
       right: 42px;
 
-      z-index: 13000;
+      z-index: 19000;
 
       display: flex;
 
@@ -681,6 +734,7 @@ function injectGalleryCSS() {
     }
 
     #topMenu button {
+
       background: transparent;
 
       border: none;
@@ -703,10 +757,12 @@ function injectGalleryCSS() {
     }
 
     #topMenu button:hover {
+
       opacity: 0.4;
     }
 
     #closeOverlay {
+
       position: fixed;
 
       top: 28px;
@@ -735,6 +791,7 @@ function injectGalleryCSS() {
     }
 
     .gallery-wrap {
+
       width: min(1360px, 94vw);
 
       margin: 0 auto;
@@ -745,12 +802,14 @@ function injectGalleryCSS() {
     }
 
     .gallery-header {
+
       text-align: center;
 
       margin-bottom: 80px;
     }
 
     .gallery-header p {
+
       margin: 0 0 18px;
 
       font-family:
@@ -764,6 +823,7 @@ function injectGalleryCSS() {
     }
 
     .gallery-header h1 {
+
       margin: 0;
 
       font-family:
@@ -781,6 +841,7 @@ function injectGalleryCSS() {
     }
 
     .gallery-list {
+
       display: flex;
 
       flex-direction: column;
@@ -789,6 +850,7 @@ function injectGalleryCSS() {
     }
 
     .gallery-loop {
+
       display: flex;
 
       flex-direction: column;
@@ -797,6 +859,7 @@ function injectGalleryCSS() {
     }
 
     .gallery-card {
+
       display: grid;
 
       grid-template-columns:
@@ -813,6 +876,7 @@ function injectGalleryCSS() {
     }
 
     .media-box {
+
       width: 100%;
 
       background: transparent;
@@ -824,6 +888,7 @@ function injectGalleryCSS() {
 
     .media-box img,
     .media-box video {
+
       display: block;
 
       width: 100%;
@@ -840,6 +905,7 @@ function injectGalleryCSS() {
     }
 
     .category-label {
+
       margin: 0 0 18px;
 
       font-family:
@@ -853,6 +919,7 @@ function injectGalleryCSS() {
     }
 
     .text-box h2 {
+
       margin: 0 0 22px;
 
       font-family:
@@ -870,6 +937,7 @@ function injectGalleryCSS() {
     }
 
     .caption {
+
       margin: 0 0 24px;
 
       font-family:
@@ -883,6 +951,7 @@ function injectGalleryCSS() {
     }
 
     .year {
+
       margin: 0;
 
       font-family:
@@ -896,7 +965,9 @@ function injectGalleryCSS() {
     }
 
     @media (max-width: 768px) {
+
       #leftLogo {
+
         left: 18px;
         bottom: 18px;
 
@@ -905,15 +976,21 @@ function injectGalleryCSS() {
         opacity: 0.45;
       }
 
-      #underConstruction {
-        width: 86vw;
+      #underConstructionText {
 
-        opacity: 0.05;
+        font-size: 16vw;
 
-        z-index: 12000;
+        letter-spacing: -0.08em;
+
+        white-space: normal;
+
+        width: 92vw;
+
+        color: rgba(0, 0, 0, 0.15);
       }
 
       #topMenu {
+
         top: 20px;
         right: 24px;
 
@@ -921,10 +998,12 @@ function injectGalleryCSS() {
       }
 
       #topMenu button {
+
         font-size: 10px;
       }
 
       #closeOverlay {
+
         top: 20px;
         right: 24px;
 
@@ -934,16 +1013,19 @@ function injectGalleryCSS() {
       }
 
       .gallery-wrap {
+
         width: 94vw;
 
         padding: 82px 0 96px;
       }
 
       .gallery-header {
+
         margin-bottom: 50px;
       }
 
       .gallery-card {
+
         display: flex;
 
         flex-direction: column;
@@ -956,32 +1038,39 @@ function injectGalleryCSS() {
       }
 
       .gallery-list {
+
         gap: 64px;
       }
 
       .gallery-loop {
+
         gap: 64px;
       }
 
       .media-box img,
       .media-box video {
+
         max-height: 82vh;
       }
 
       .gallery-header h1 {
+
         font-size: 72px;
       }
 
       .text-box h2 {
+
         font-size: 42px;
       }
 
       .caption {
+
         font-size: 13px;
 
         line-height: 1.8;
       }
     }
+
   `
 
   document.head.appendChild(style)
@@ -994,6 +1083,7 @@ injectGalleryCSS()
 // ======================================================
 
 function animate() {
+
   requestAnimationFrame(animate)
 
   scene.rotation.y +=
@@ -1004,6 +1094,7 @@ function animate() {
   controls.update()
 
   for (const mesh of meshes) {
+
     mesh.lookAt(camera.position)
   }
 
@@ -1019,6 +1110,7 @@ animate()
 window.addEventListener(
   'resize',
   () => {
+
     camera.aspect =
       window.innerWidth / window.innerHeight
 
