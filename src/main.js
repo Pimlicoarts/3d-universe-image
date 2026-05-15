@@ -45,7 +45,7 @@ const camera = new THREE.PerspectiveCamera(
   3000
 )
 
-camera.position.z = isMobile ? 88 : 62
+camera.position.z = isMobile ? 96 : 78
 
 const renderer = new THREE.WebGLRenderer({
   antialias: !isMobile,
@@ -415,10 +415,13 @@ window.addEventListener(
 
 function createUniversePosition() {
 
+  const range =
+    isMobile ? 270 : 420
+
   return new THREE.Vector3(
-    (Math.random() - 0.5) * 220,
-    (Math.random() - 0.5) * 220,
-    (Math.random() - 0.5) * 220
+    (Math.random() - 0.5) * range,
+    (Math.random() - 0.5) * range,
+    (Math.random() - 0.5) * range
   )
 }
 
@@ -428,7 +431,7 @@ function createSpherePosition(
 ) {
 
   const radius =
-    isMobile ? 64 : 86
+    isMobile ? 70 : 96
 
   const goldenAngle =
     Math.PI * (3 - Math.sqrt(5))
@@ -468,9 +471,7 @@ for (let i = 0; i < CARD_COUNT; i++) {
 
   const item =
     contentItems[
-      Math.floor(
-        Math.random() * contentItems.length
-      )
+      i % contentItems.length
     ]
 
   const texture =
@@ -508,14 +509,29 @@ for (let i = 0; i < CARD_COUNT; i++) {
     universePosition
   )
 
-  const scale =
-    0.9 + Math.random() * 1.5
+  const baseScale =
+    isMobile
+      ? 0.58 + Math.random() * 0.95
+      : 0.62 + Math.random() * 1.05
 
-  mesh.scale.set(
-    scale,
-    scale,
-    scale
-  )
+  const originalScale =
+    new THREE.Vector3(
+      baseScale,
+      baseScale,
+      baseScale
+    )
+
+  const sphereScaleValue =
+    isMobile ? 0.68 : 0.72
+
+  const sphereScale =
+    new THREE.Vector3(
+      sphereScaleValue,
+      sphereScaleValue,
+      sphereScaleValue
+    )
+
+  mesh.scale.copy(originalScale)
 
   mesh.userData = item
 
@@ -527,6 +543,15 @@ for (let i = 0; i < CARD_COUNT; i++) {
 
   mesh.userData.targetPosition =
     universePosition.clone()
+
+  mesh.userData.originalScale =
+    originalScale
+
+  mesh.userData.sphereScale =
+    sphereScale
+
+  mesh.userData.targetScale =
+    originalScale.clone()
 
   scene.add(mesh)
 
@@ -1283,6 +1308,16 @@ function animate() {
     mesh.position.lerp(
       mesh.userData.targetPosition,
       0.045
+    )
+
+    mesh.userData.targetScale =
+      isSphereMode
+        ? mesh.userData.sphereScale
+        : mesh.userData.originalScale
+
+    mesh.scale.lerp(
+      mesh.userData.targetScale,
+      0.08
     )
 
     if (isSphereMode) {
