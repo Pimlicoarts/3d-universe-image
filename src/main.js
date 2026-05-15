@@ -121,7 +121,9 @@ topMenu.innerHTML = `
 
   <button>CONTACT</button>
 
-  <button onclick="window.open('https://www.instagram.com/pimlicoarts/', '_blank')">
+  <button onclick="window.open('<button onclick="window.open('http://www.instagram.com/pimlicoartsjapan', '_blank')">
+  IG
+</button>', '_blank')">
     IG
   </button>
 `
