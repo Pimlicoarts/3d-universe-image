@@ -22,6 +22,13 @@ fontStyle.innerHTML = `
   font-weight: 400;
   font-style: normal;
 }
+
+@font-face {
+  font-family: 'FrutigerBoldItalic';
+  src: url('/fonts/FrutigerLTStd-BoldItalic.otf') format('opentype');
+  font-weight: 700;
+  font-style: italic;
+}
 `
 
 document.head.appendChild(fontStyle)
@@ -107,7 +114,7 @@ topMenu.id = 'topMenu'
 topMenu.innerHTML = `
   <button>ABOUT</button>
 
-  <button>WORKS</button>
+  <button onclick="window.__showWorks && window.__showWorks()">WORKS</button>
 
   <button onclick="window.open('https://pimlicoartjapan.myshopify.com/', '_blank')">
     SHOP
@@ -119,7 +126,9 @@ topMenu.innerHTML = `
 
   <button>NEWS</button>
 
-  <button>CONTACT</button>
+  <button onclick="window.__showContact && window.__showContact()">
+    CONTACT
+  </button>
 
   <button onclick="window.open('https://www.instagram.com/pimlicoartsjapan', '_blank')">
     IG
@@ -220,6 +229,22 @@ const contentItems = [
     title: 'PHYSICAL 05',
     category: 'PHYSICAL',
     caption: 'Physical plastic memory object.',
+    year: '2026'
+  },
+
+  {
+    type: 'image',
+    path: '/physical/phy_06.jpg',
+    title: '小さな抵抗',
+    category: 'PHYSICAL',
+    caption: `大きな大きな波にのまれ、大きな大きな力に巻き込まれ、繰り返される大きな歴史の流れには逆らえないのか、そんな思いから、ピムリコオリジナルの基盤を使って、古いテレビなどから取った抵抗を使った、マグネット式のブローチ「小さな抵抗」。　昔から戦争反対と言いつつ、兵器や軍服などの装備品の持つ強さやデザインに惹かれ、ピムリコの芸術も軍産複合体に組み込みたい、戦争特需を受けたいと、皮肉たっぷりにおもいながら、イスラエルのインテリジェンスが使ったページャーをソースに作りました。マグネットとしてもブローチとしても、各基盤にはボタンがついていて、芸術を爆発させる事も、多動症の方にはハンドスピナーのように手持ち無沙汰を紛らわせれるように設計されています。
+
+Overwhelmed by enormous waves, caught up in immense forces, and confronted by the repeated currents of history, I began wondering whether it is possible to resist them at all. From that thought came Small Resistance, a magnetic brooch made using Pimlico's original circuit boards and tiny resistors salvaged from old televisions and other electronic devices.
+
+For a long time, while opposing war, I have also been fascinated by the power and design of military equipment and uniforms. With a heavy dose of irony, I sometimes imagine Pimlico's art being absorbed into the military-industrial complex and benefiting from wartime demand. This work takes inspiration from the pagers reportedly used by Israeli intelligence.
+
+Functioning both as a magnet and as a brooch, each circuit board is equipped with a button. It is designed so that one can metaphorically "detonate" art, while also serving as a tactile object—something that can be fidgeted with, like a hand spinner, to help occupy restless hands and minds.
+During the exhibition, I had conversations with people from the United States, China, Israel, and Lebanon. Despite their different backgrounds, they all hoped for peace.`,
     year: '2026'
   },
 
@@ -447,15 +472,536 @@ window.addEventListener(
 )
 
 // ======================================================
+// MEDIA LOAD HELPERS
+// ======================================================
+
+// Waits until every <img>/<video> inside `container` has finished
+// loading enough to know its real rendered size. This prevents the
+// page from reflowing (and pushing content around) AFTER we've
+// already scrolled to a target element.
+function waitForMediaLoaded(container) {
+  const media = Array.from(
+    container.querySelectorAll('img, video')
+  )
+
+  const promises = media.map((el) => {
+    if (el.tagName === 'IMG') {
+      if (el.complete && el.naturalWidth > 0) {
+        return Promise.resolve()
+      }
+
+      return new Promise((resolve) => {
+        el.addEventListener('load', resolve, { once: true })
+        el.addEventListener('error', resolve, { once: true })
+      })
+    }
+
+    // video
+    if (el.readyState >= 1) {
+      // HAVE_METADATA or higher = dimensions are known
+      return Promise.resolve()
+    }
+
+    return new Promise((resolve) => {
+      el.addEventListener('loadedmetadata', resolve, { once: true })
+      el.addEventListener('error', resolve, { once: true })
+    })
+  })
+
+  // Safety timeout so a single broken/slow file can't hang the scroll
+  // indefinitely.
+  const timeout = new Promise((resolve) => setTimeout(resolve, 3000))
+
+  return Promise.race([
+    Promise.all(promises),
+    timeout
+  ])
+}
+
+// ======================================================
 // GALLERY
 // ======================================================
 
-function showGallery(category, selectedPath) {
+function closeOverlay() {
+  const galleryOverlay =
+    document.getElementById('galleryOverlay')
+
+  const contactOverlay =
+    document.getElementById('contactOverlay')
+
+  const worksOverlay =
+    document.getElementById('worksOverlay')
+
+  if (galleryOverlay) {
+    galleryOverlay.remove()
+  }
+
+  if (contactOverlay) {
+    contactOverlay.remove()
+  }
+
+  if (worksOverlay) {
+    worksOverlay.remove()
+  }
+
+  topMenu.style.display = 'flex'
+  underConstructionText.style.display = 'block'
+}
+
+// Renders whatever screen a given history state represents, without
+// pushing a new history entry (used for back/forward navigation).
+function renderState(state) {
+  if (!state) {
+    closeOverlay()
+    return
+  }
+
+  if (state.gallery) {
+    showGallery(state.category, state.selectedPath, {
+      pushHistory: false
+    })
+    return
+  }
+
+  if (state.works) {
+    showWorks({ pushHistory: false })
+    return
+  }
+
+  if (state.contact) {
+    showContact({ pushHistory: false })
+    return
+  }
+
+  closeOverlay()
+}
+
+// Browser back/forward button support: each screen (works list,
+// gallery, contact) is pushed onto the browser history, so the
+// device/browser "back" button steps back through them naturally and
+// eventually returns to the home (3D) screen.
+window.addEventListener('popstate', (event) => {
+  renderState(event.state)
+})
+
+// ======================================================
+// CONTACT
+// ======================================================
+
+function showContact(options = {}) {
+  const { pushHistory = true } = options
+
+  const old =
+    document.getElementById('contactOverlay')
+
+  if (old) {
+    old.remove()
+  }
+
+  const galleryOld =
+    document.getElementById('galleryOverlay')
+
+  if (galleryOld) {
+    galleryOld.remove()
+  }
+
+  const worksOld =
+    document.getElementById('worksOverlay')
+
+  if (worksOld) {
+    worksOld.remove()
+  }
+
+  if (pushHistory) {
+    history.pushState(
+      { contact: true },
+      '',
+      ''
+    )
+  }
+
+  topMenu.style.display = 'none'
+  underConstructionText.style.display = 'none'
+
+  injectGalleryCSS()
+  injectContactCSS()
+
+  const overlay = document.createElement('div')
+
+  overlay.id = 'contactOverlay'
+
+  document.body.appendChild(overlay)
+
+  overlay.innerHTML = `
+    <button id="closeContactOverlay">
+      CLOSE
+    </button>
+
+    <div class="contact-wrap">
+
+      <p class="contact-label">
+        CONTACT
+      </p>
+
+      <button id="contactEmailLogo" class="contact-email">
+        pimlicoarts@gmail.com
+      </button>
+
+    </div>
+  `
+
+  document
+    .getElementById('closeContactOverlay')
+    .addEventListener(
+      'click',
+      () => {
+        history.back()
+      }
+    )
+
+  document
+    .getElementById('contactEmailLogo')
+    .addEventListener(
+      'click',
+      () => {
+        window.location.href =
+          'mailto:pimlicoarts@gmail.com'
+      }
+    )
+}
+
+function injectContactCSS() {
+  if (
+    document.getElementById('contactStyle')
+  ) return
+
+  const style =
+    document.createElement('style')
+
+  style.id = 'contactStyle'
+
+  style.innerHTML = `
+    #contactOverlay {
+      position: fixed;
+
+      top: 0;
+      left: 0;
+
+      width: 100%;
+      height: 100%;
+
+      z-index: 20000;
+
+      background: white;
+      color: black;
+
+      display: flex;
+
+      align-items: center;
+      justify-content: center;
+    }
+
+    .contact-wrap {
+      text-align: center;
+
+      padding: 0 24px;
+    }
+
+    .contact-label {
+      margin: 0 0 28px;
+
+      font-family: monospace;
+
+      font-size: 12px;
+
+      letter-spacing: 4px;
+
+      color: #888;
+    }
+
+    .contact-email {
+      background: transparent;
+
+      border: none;
+
+      cursor: pointer;
+
+      padding: 0;
+
+      font-family: 'FrutigerBoldItalic', sans-serif;
+
+      font-weight: 700;
+      font-style: italic;
+
+      font-size: clamp(22px, 5vw, 56px);
+
+      letter-spacing: -0.02em;
+
+      color: black;
+
+      transition: opacity 0.2s ease;
+    }
+
+    .contact-email:hover {
+      opacity: 0.5;
+    }
+
+    @media (max-width: 768px) {
+      .contact-email {
+        font-size: 28px;
+
+        word-break: break-all;
+      }
+    }
+  `
+
+  document.head.appendChild(style)
+}
+
+// ======================================================
+// WORKS (category selection screen)
+// ======================================================
+
+function showWorks(options = {}) {
+  const { pushHistory = true } = options
+
+  const oldWorks =
+    document.getElementById('worksOverlay')
+
+  if (oldWorks) {
+    oldWorks.remove()
+  }
+
+  const oldGallery =
+    document.getElementById('galleryOverlay')
+
+  if (oldGallery) {
+    oldGallery.remove()
+  }
+
+  const oldContact =
+    document.getElementById('contactOverlay')
+
+  if (oldContact) {
+    oldContact.remove()
+  }
+
+  if (pushHistory) {
+    history.pushState(
+      { works: true },
+      '',
+      ''
+    )
+  }
+
+  topMenu.style.display = 'none'
+  underConstructionText.style.display = 'none'
+
+  injectWorksCSS()
+
+  const overlay = document.createElement('div')
+
+  overlay.id = 'worksOverlay'
+
+  document.body.appendChild(overlay)
+
+  overlay.innerHTML = `
+    <button id="closeWorksOverlay">
+      CLOSE
+    </button>
+
+    <div class="works-wrap">
+
+      <p class="works-brand">
+        PIMLICO ARTS JAPAN
+      </p>
+
+      <p class="works-label">
+        WORKS
+      </p>
+
+      <nav class="works-list">
+
+        <button class="works-link" data-category="PHYSICAL">
+          Physical
+        </button>
+
+        <button class="works-link" data-category="VIDEO">
+          Videos
+        </button>
+
+        <button class="works-link" data-category="IMAGE">
+          Images
+        </button>
+
+      </nav>
+
+    </div>
+  `
+
+  document
+    .getElementById('closeWorksOverlay')
+    .addEventListener(
+      'click',
+      () => {
+        history.back()
+      }
+    )
+
+  overlay
+    .querySelectorAll('.works-link')
+    .forEach((button) => {
+      button.addEventListener('click', () => {
+        const category = button.dataset.category
+
+        showGallery(category, null, { pushHistory: true })
+      })
+    })
+}
+
+function injectWorksCSS() {
+  if (
+    document.getElementById('worksStyle')
+  ) return
+
+  const style =
+    document.createElement('style')
+
+  style.id = 'worksStyle'
+
+  style.innerHTML = `
+    #worksOverlay {
+      position: fixed;
+
+      top: 0;
+      left: 0;
+
+      width: 100%;
+      height: 100%;
+
+      z-index: 20000;
+
+      background: white;
+      color: black;
+
+      display: flex;
+
+      align-items: center;
+      justify-content: center;
+    }
+
+    .works-wrap {
+      text-align: center;
+
+      padding: 0 24px;
+    }
+
+    .works-brand {
+      margin: 0 0 18px;
+
+      font-family: monospace;
+
+      font-size: 11px;
+
+      letter-spacing: 4px;
+
+      color: #888;
+    }
+
+    .works-label {
+      margin: 0 0 36px;
+
+      font-family: monospace;
+
+      font-size: 12px;
+
+      letter-spacing: 4px;
+
+      color: #888;
+    }
+
+    .works-list {
+      display: flex;
+
+      flex-direction: column;
+
+      align-items: center;
+
+      gap: 18px;
+    }
+
+    .works-link {
+      background: transparent;
+
+      border: none;
+
+      cursor: pointer;
+
+      padding: 0;
+
+      font-family: 'FrutigerLight', sans-serif;
+
+      font-weight: 300;
+
+      font-size: clamp(34px, 7vw, 90px);
+
+      line-height: 0.95;
+
+      letter-spacing: -0.04em;
+
+      color: black;
+
+      transition: opacity 0.2s ease;
+    }
+
+    .works-link:hover {
+      opacity: 0.5;
+    }
+
+    @media (max-width: 768px) {
+      .works-link {
+        font-size: 48px;
+      }
+
+      .works-list {
+        gap: 14px;
+      }
+    }
+  `
+
+  document.head.appendChild(style)
+}
+
+function showGallery(category, selectedPath, options = {}) {
+  const { pushHistory = true } = options
+
   const old =
     document.getElementById('galleryOverlay')
 
   if (old) {
     old.remove()
+  }
+
+  const oldWorks =
+    document.getElementById('worksOverlay')
+
+  if (oldWorks) {
+    oldWorks.remove()
+  }
+
+  const oldContact =
+    document.getElementById('contactOverlay')
+
+  if (oldContact) {
+    oldContact.remove()
+  }
+
+  if (pushHistory) {
+    history.pushState(
+      { gallery: true, category, selectedPath },
+      '',
+      ''
+    )
   }
 
   topMenu.style.display = 'none'
@@ -476,6 +1022,11 @@ function showGallery(category, selectedPath) {
   overlay.style.overflowY = 'scroll'
   overlay.style.WebkitOverflowScrolling = 'touch'
 
+  // Hide the overlay visually until we've scrolled to the right
+  // place, so the user never sees the "wrong card then jump to
+  // correct card" flash.
+  overlay.style.visibility = 'hidden'
+
   document.body.appendChild(overlay)
 
   injectGalleryCSS()
@@ -487,6 +1038,12 @@ function showGallery(category, selectedPath) {
     )
 
   function createCards(loopIndex) {
+    const categoryDisplayNames = {
+      PHYSICAL: 'PHYSICAL WORK',
+      VIDEO: 'VIDEO WORK',
+      IMAGE: 'IMAGE WORK'
+    }
+
     return items
       .map((item) => {
         const isSelected =
@@ -523,7 +1080,7 @@ function showGallery(category, selectedPath) {
             <div class="text-box">
 
               <p class="category-label">
-                ${item.category}
+                ${categoryDisplayNames[item.category] || item.category}
               </p>
 
               <h2>
@@ -589,44 +1146,85 @@ function showGallery(category, selectedPath) {
     .addEventListener(
       'click',
       () => {
-        overlay.remove()
-
-        topMenu.style.display = 'flex'
-        underConstructionText.style.display = 'block'
+        // Go back in history instead of closing directly, so the
+        // pushed gallery history entry is consumed and the browser's
+        // back button stays in sync with the app state.
+        history.back()
       }
     )
 
-  requestAnimationFrame(() => {
-    const selected =
-      document.getElementById('selectedCard')
+  // --- Scroll to the selected card only after its media (and
+  // everything above it, which affects its position) has finished
+  // loading, so the layout is final BEFORE we scroll. This fixes the
+  // "jumps to the wrong card" issue caused by images/videos resizing
+  // after the scroll already happened. ---
+  const firstLoop = overlay.querySelector('.gallery-loop')
+  const secondLoop = firstLoop
+    ? firstLoop.nextElementSibling
+    : null
 
-    if (selected) {
-      selected.scrollIntoView({
-        behavior: 'instant',
-        block: 'center'
-      })
-    }
+  const mediaToWaitFor = []
+
+  if (firstLoop) mediaToWaitFor.push(firstLoop)
+  if (secondLoop) mediaToWaitFor.push(secondLoop)
+
+  Promise.all(
+    mediaToWaitFor.map((loopEl) => waitForMediaLoaded(loopEl))
+  ).then(() => {
+    requestAnimationFrame(() => {
+      const selected =
+        document.getElementById('selectedCard')
+
+      if (selected) {
+        selected.scrollIntoView({
+          behavior: 'instant',
+          block: 'center'
+        })
+      }
+
+      overlay.style.visibility = 'visible'
+    })
   })
+
+  // ----------------------------------------------------
+  // Infinite scroll loop correction
+  // ----------------------------------------------------
+  // Cache the loop height via ResizeObserver instead of re-reading
+  // offsetHeight on every scroll event. This avoids using a stale or
+  // mid-reflow height value while images/videos are still loading,
+  // which previously caused visible jumps/glitches during scrolling.
+  let loopHeight = 0
+
+  const loopForHeight =
+    overlay.querySelector('.gallery-loop')
+
+  let resizeObserver = null
+
+  if (loopForHeight) {
+    resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        loopHeight = entry.contentRect.height
+      }
+    })
+
+    resizeObserver.observe(loopForHeight)
+  }
+
+  const margin = 2 // px tolerance to avoid sub-pixel misfires
 
   overlay.addEventListener(
     'scroll',
     () => {
-      const loop =
-        overlay.querySelector('.gallery-loop')
-
-      if (!loop) return
-
-      const loopHeight =
-        loop.offsetHeight
+      if (!loopHeight) return
 
       if (
-        overlay.scrollTop >= loopHeight * 2
+        overlay.scrollTop >= loopHeight * 2 - margin
       ) {
         overlay.scrollTop -= loopHeight
       }
 
       if (
-        overlay.scrollTop <= 0
+        overlay.scrollTop <= margin
       ) {
         overlay.scrollTop += loopHeight
       }
@@ -922,6 +1520,8 @@ function injectGalleryCSS() {
       line-height: 1.9;
 
       color: #333;
+
+      white-space: pre-line;
     }
 
     .year {
@@ -1034,6 +1634,9 @@ function injectGalleryCSS() {
 }
 
 injectGalleryCSS()
+
+window.__showContact = showContact
+window.__showWorks = showWorks
 
 // ======================================================
 // ANIMATE
