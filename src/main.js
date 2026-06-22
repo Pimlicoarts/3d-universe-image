@@ -29,6 +29,15 @@ fontStyle.innerHTML = `
   font-weight: 700;
   font-style: italic;
 }
+
+@font-face {
+  font-family: 'Matisse';
+  src: url('/fonts/MatisseITC-Regular.woff2') format('woff2'),
+       url('/fonts/MatisseITC-Regular.woff') format('woff'),
+       url('/fonts/MatisseITC-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
 `
 
 document.head.appendChild(fontStyle)
@@ -112,7 +121,7 @@ const topMenu = document.createElement('div')
 topMenu.id = 'topMenu'
 
 topMenu.innerHTML = `
-  <button>ABOUT</button>
+  <button onclick="window.__showAbout && window.__showAbout()">ABOUT</button>
 
   <button onclick="window.__showWorks && window.__showWorks()">WORKS</button>
 
@@ -136,6 +145,7 @@ topMenu.innerHTML = `
 `
 
 document.body.appendChild(topMenu)
+
 
 // ======================================================
 // CONTENTS
@@ -330,105 +340,60 @@ const videoElements = []
 
 function createImageTexture(path) {
   const texture = imageLoader.load(path)
-
   texture.colorSpace = THREE.SRGBColorSpace
-
   texture.minFilter = THREE.LinearFilter
   texture.magFilter = THREE.LinearFilter
-
   return texture
 }
 
 function createVideoTexture(path) {
   const video = document.createElement('video')
-
   video.src = path
-
   video.loop = true
   video.muted = true
   video.autoplay = true
   video.playsInline = true
   video.preload = 'auto'
-
   video.play().catch(() => {})
-
   videoElements.push(video)
-
   const texture = new THREE.VideoTexture(video)
-
   texture.colorSpace = THREE.SRGBColorSpace
-
   texture.minFilter = THREE.LinearFilter
   texture.magFilter = THREE.LinearFilter
-
   return texture
 }
 
 function getTexture(item) {
-  if (textureCache.has(item.path)) {
-    return textureCache.get(item.path)
-  }
-
-  const texture =
-    item.type === 'video'
-      ? createVideoTexture(item.path)
-      : createImageTexture(item.path)
-
+  if (textureCache.has(item.path)) return textureCache.get(item.path)
+  const texture = item.type === 'video' ? createVideoTexture(item.path) : createImageTexture(item.path)
   textureCache.set(item.path, texture)
-
   return texture
 }
 
-window.addEventListener(
-  'pointerdown',
-  () => {
-    for (const video of videoElements) {
-      video.play().catch(() => {})
-    }
-  },
-  { once: true }
-)
+window.addEventListener('pointerdown', () => {
+  for (const video of videoElements) video.play().catch(() => {})
+}, { once: true })
 
 // ======================================================
 // MESHES
 // ======================================================
 
 const meshes = []
-
 const CARD_COUNT = isMobile ? 30 : 55
 
 for (let i = 0; i < CARD_COUNT; i++) {
-  const item =
-    contentItems[
-      Math.floor(
-        Math.random() * contentItems.length
-      )
-    ]
-
+  const item = contentItems[Math.floor(Math.random() * contentItems.length)]
   const texture = getTexture(item)
-
   const geometry = new THREE.PlaneGeometry(5, 5)
-
-  const material = new THREE.MeshBasicMaterial({
-    map: texture,
-    transparent: true,
-    side: THREE.DoubleSide
-  })
-
+  const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true, side: THREE.DoubleSide })
   const mesh = new THREE.Mesh(geometry, material)
-
   mesh.position.x = (Math.random() - 0.5) * 190
   mesh.position.y = (Math.random() - 0.5) * 190
   mesh.position.z = (Math.random() - 0.5) * 190
-
   const scale = 0.9 + Math.random() * 1.5
-
   mesh.scale.set(scale, scale, scale)
-
   mesh.userData = item
-
   scene.add(mesh)
-
   meshes.push(mesh)
 }
 
@@ -439,150 +404,201 @@ for (let i = 0; i < CARD_COUNT; i++) {
 const raycaster = new THREE.Raycaster()
 const mouse = new THREE.Vector2()
 
-window.addEventListener(
-  'click',
-  (event) => {
-    if (
-      event.target.closest('#galleryOverlay') ||
-      event.target.closest('#topMenu') ||
-      event.target.closest('#leftLogo') ||
-      event.target.closest('#underConstructionText')
-    ) {
-      return
-    }
+window.addEventListener('click', (event) => {
+  if (
+    event.target.closest('#galleryOverlay') ||
+    event.target.closest('#topMenu') ||
+    event.target.closest('#leftLogo') ||
+    event.target.closest('#underConstructionText') ||
+    event.target.closest('#aboutOverlay') ||
+    event.target.closest('#contactOverlay') ||
+    event.target.closest('#worksOverlay')
+  ) return
 
-    mouse.x =
-      (event.clientX / window.innerWidth)
-      * 2 - 1
-
-    mouse.y =
-      -(event.clientY / window.innerHeight)
-      * 2 + 1
-
-    raycaster.setFromCamera(mouse, camera)
-
-    const intersects = raycaster.intersectObjects(meshes)
-
-    if (intersects.length > 0) {
-      const item = intersects[0].object.userData
-
-      showGallery(item.category, item.path)
-    }
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1
+  raycaster.setFromCamera(mouse, camera)
+  const intersects = raycaster.intersectObjects(meshes)
+  if (intersects.length > 0) {
+    const item = intersects[0].object.userData
+    showGallery(item.category, item.path)
   }
-)
+})
 
 // ======================================================
 // MEDIA LOAD HELPERS
 // ======================================================
 
-// Waits until every <img>/<video> inside `container` has finished
-// loading enough to know its real rendered size. This prevents the
-// page from reflowing (and pushing content around) AFTER we've
-// already scrolled to a target element.
 function waitForMediaLoaded(container) {
-  const media = Array.from(
-    container.querySelectorAll('img, video')
-  )
-
+  const media = Array.from(container.querySelectorAll('img, video'))
   const promises = media.map((el) => {
     if (el.tagName === 'IMG') {
-      if (el.complete && el.naturalWidth > 0) {
-        return Promise.resolve()
-      }
-
+      if (el.complete && el.naturalWidth > 0) return Promise.resolve()
       return new Promise((resolve) => {
         el.addEventListener('load', resolve, { once: true })
         el.addEventListener('error', resolve, { once: true })
       })
     }
-
-    // video
-    if (el.readyState >= 1) {
-      // HAVE_METADATA or higher = dimensions are known
-      return Promise.resolve()
-    }
-
+    if (el.readyState >= 1) return Promise.resolve()
     return new Promise((resolve) => {
       el.addEventListener('loadedmetadata', resolve, { once: true })
       el.addEventListener('error', resolve, { once: true })
     })
   })
-
-  // Safety timeout so a single broken/slow file can't hang the scroll
-  // indefinitely.
   const timeout = new Promise((resolve) => setTimeout(resolve, 3000))
-
-  return Promise.race([
-    Promise.all(promises),
-    timeout
-  ])
+  return Promise.race([Promise.all(promises), timeout])
 }
 
 // ======================================================
-// GALLERY
+// CLOSE ALL
 // ======================================================
 
 function closeOverlay() {
-  const galleryOverlay =
-    document.getElementById('galleryOverlay')
-
-  const contactOverlay =
-    document.getElementById('contactOverlay')
-
-  const worksOverlay =
-    document.getElementById('worksOverlay')
-
-  if (galleryOverlay) {
-    galleryOverlay.remove()
-  }
-
-  if (contactOverlay) {
-    contactOverlay.remove()
-  }
-
-  if (worksOverlay) {
-    worksOverlay.remove()
-  }
-
+  const ids = ['galleryOverlay', 'contactOverlay', 'worksOverlay', 'aboutOverlay']
+  ids.forEach((id) => {
+    const el = document.getElementById(id)
+    if (el) el.remove()
+  })
   topMenu.style.display = 'flex'
   underConstructionText.style.display = 'block'
 }
 
-// Renders whatever screen a given history state represents, without
-// pushing a new history entry (used for back/forward navigation).
 function renderState(state) {
-  if (!state) {
-    closeOverlay()
-    return
-  }
-
-  if (state.gallery) {
-    showGallery(state.category, state.selectedPath, {
-      pushHistory: false
-    })
-    return
-  }
-
-  if (state.works) {
-    showWorks({ pushHistory: false })
-    return
-  }
-
-  if (state.contact) {
-    showContact({ pushHistory: false })
-    return
-  }
-
+  if (!state) { closeOverlay(); return }
+  if (state.about)   { showAbout({ pushHistory: false }); return }
+  if (state.gallery) { showGallery(state.category, state.selectedPath, { pushHistory: false }); return }
+  if (state.works)   { showWorks({ pushHistory: false }); return }
+  if (state.contact) { showContact({ pushHistory: false }); return }
   closeOverlay()
 }
 
-// Browser back/forward button support: each screen (works list,
-// gallery, contact) is pushed onto the browser history, so the
-// device/browser "back" button steps back through them naturally and
-// eventually returns to the home (3D) screen.
-window.addEventListener('popstate', (event) => {
-  renderState(event.state)
-})
+window.addEventListener('popstate', (event) => { renderState(event.state) })
+
+// ======================================================
+// ABOUT
+// ======================================================
+
+function showAbout(options = {}) {
+  const { pushHistory = true } = options
+
+  ;['aboutOverlay','galleryOverlay','worksOverlay','contactOverlay'].forEach((id) => {
+    const el = document.getElementById(id)
+    if (el) el.remove()
+  })
+
+  if (pushHistory) history.pushState({ about: true }, '', '')
+
+  topMenu.style.display = 'none'
+  underConstructionText.style.display = 'none'
+
+  injectGalleryCSS()
+  injectAboutCSS()
+
+  const overlay = document.createElement('div')
+  overlay.id = 'aboutOverlay'
+  document.body.appendChild(overlay)
+
+  overlay.innerHTML = `
+    <button id="closeAboutOverlay">CLOSE</button>
+
+    <div class="about-inner">
+      <p class="about-label">ABOUT</p>
+
+      <p class="about-body">
+        ２年間過ごしたロンドン ピムリコで出会った、<br>
+        エジプト人 アリとの生活と、<br>
+        ドイツ人デザイナー ヨーガン レールさんの展示<br>
+        「 ここは誰のもの？ 」にインスパイアされ。。。
+      </p>
+    </div>
+  `
+
+  document.getElementById('closeAboutOverlay').addEventListener('click', () => {
+    history.back()
+  })
+}
+
+function injectAboutCSS() {
+  if (document.getElementById('aboutStyle')) return
+
+  const style = document.createElement('style')
+  style.id = 'aboutStyle'
+
+  style.innerHTML = `
+    #aboutOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 20000;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    #closeAboutOverlay {
+      position: fixed;
+      top: 28px;
+      right: 42px;
+      z-index: 30000;
+      border: 1px solid black;
+      background: black;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 999px;
+      font-size: 11px;
+      letter-spacing: 2px;
+      cursor: pointer;
+      font-family: monospace;
+    }
+
+    .about-inner {
+      width: min(860px, 88vw);
+      text-align: left;
+    }
+
+    .about-label {
+      margin: 0 0 32px;
+      font-family: monospace;
+      font-size: 11px;
+      letter-spacing: 4px;
+      color: #aaa;
+    }
+
+    .about-body {
+      margin: 0;
+      font-family: 'Matisse', 'FrutigerLight', serif;
+      font-size: clamp(28px, 4.5vw, 64px);
+      line-height: 1.6;
+      letter-spacing: 0.01em;
+      color: #000;
+      white-space: pre-line;
+    }
+
+    @media (max-width: 768px) {
+      #closeAboutOverlay {
+        top: 20px;
+        right: 24px;
+        padding: 10px 15px;
+        font-size: 10px;
+      }
+
+      .about-inner {
+        width: 88vw;
+      }
+
+      .about-body {
+        font-size: clamp(22px, 6vw, 38px);
+        line-height: 1.7;
+      }
+    }
+  `
+
+  document.head.appendChild(style)
+}
 
 // ======================================================
 // CONTACT
@@ -591,34 +607,12 @@ window.addEventListener('popstate', (event) => {
 function showContact(options = {}) {
   const { pushHistory = true } = options
 
-  const old =
-    document.getElementById('contactOverlay')
+  ;['contactOverlay','galleryOverlay','worksOverlay','aboutOverlay'].forEach((id) => {
+    const el = document.getElementById(id)
+    if (el) el.remove()
+  })
 
-  if (old) {
-    old.remove()
-  }
-
-  const galleryOld =
-    document.getElementById('galleryOverlay')
-
-  if (galleryOld) {
-    galleryOld.remove()
-  }
-
-  const worksOld =
-    document.getElementById('worksOverlay')
-
-  if (worksOld) {
-    worksOld.remove()
-  }
-
-  if (pushHistory) {
-    history.pushState(
-      { contact: true },
-      '',
-      ''
-    )
-  }
+  if (pushHistory) history.pushState({ contact: true }, '', '')
 
   topMenu.style.display = 'none'
   underConstructionText.style.display = 'none'
@@ -627,172 +621,59 @@ function showContact(options = {}) {
   injectContactCSS()
 
   const overlay = document.createElement('div')
-
   overlay.id = 'contactOverlay'
-
   document.body.appendChild(overlay)
 
   overlay.innerHTML = `
-    <button id="closeContactOverlay">
-      CLOSE
-    </button>
-
+    <button id="closeContactOverlay">CLOSE</button>
     <div class="contact-wrap">
-
-      <p class="contact-label">
-        CONTACT
-      </p>
-
-      <button id="contactEmailLogo" class="contact-email">
-        pimlicoarts@gmail.com
-      </button>
-
+      <p class="contact-label">CONTACT</p>
+      <button id="contactEmailLogo" class="contact-email">pimlicoarts@gmail.com</button>
     </div>
   `
 
-  document
-    .getElementById('closeContactOverlay')
-    .addEventListener(
-      'click',
-      () => {
-        history.back()
-      }
-    )
-
-  document
-    .getElementById('contactEmailLogo')
-    .addEventListener(
-      'click',
-      () => {
-        window.location.href =
-          'mailto:pimlicoarts@gmail.com'
-      }
-    )
+  document.getElementById('closeContactOverlay').addEventListener('click', () => { history.back() })
+  document.getElementById('contactEmailLogo').addEventListener('click', () => {
+    window.location.href = 'mailto:pimlicoarts@gmail.com'
+  })
 }
 
 function injectContactCSS() {
-  if (
-    document.getElementById('contactStyle')
-  ) return
-
-  const style =
-    document.createElement('style')
-
+  if (document.getElementById('contactStyle')) return
+  const style = document.createElement('style')
   style.id = 'contactStyle'
-
   style.innerHTML = `
     #contactOverlay {
-      position: fixed;
-
-      top: 0;
-      left: 0;
-
-      width: 100%;
-      height: 100%;
-
-      z-index: 20000;
-
-      background: white;
-      color: black;
-
-      display: flex;
-
-      align-items: center;
-      justify-content: center;
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      z-index: 20000; background: white; color: black;
+      display: flex; align-items: center; justify-content: center;
     }
-
-    .contact-wrap {
-      text-align: center;
-
-      padding: 0 24px;
-    }
-
-    .contact-label {
-      margin: 0 0 28px;
-
-      font-family: monospace;
-
-      font-size: 12px;
-
-      letter-spacing: 4px;
-
-      color: #888;
-    }
-
+    .contact-wrap { text-align: center; padding: 0 24px; }
+    .contact-label { margin: 0 0 28px; font-family: monospace; font-size: 12px; letter-spacing: 4px; color: #888; }
     .contact-email {
-      background: transparent;
-
-      border: none;
-
-      cursor: pointer;
-
-      padding: 0;
-
-      font-family: 'FrutigerBoldItalic', sans-serif;
-
-      font-weight: 700;
-      font-style: italic;
-
-      font-size: clamp(22px, 5vw, 56px);
-
-      letter-spacing: -0.02em;
-
-      color: black;
-
-      transition: opacity 0.2s ease;
+      background: transparent; border: none; cursor: pointer; padding: 0;
+      font-family: 'FrutigerBoldItalic', sans-serif; font-weight: 700; font-style: italic;
+      font-size: clamp(22px, 5vw, 56px); letter-spacing: -0.02em; color: black; transition: opacity 0.2s ease;
     }
-
-    .contact-email:hover {
-      opacity: 0.5;
-    }
-
-    @media (max-width: 768px) {
-      .contact-email {
-        font-size: 28px;
-
-        word-break: break-all;
-      }
-    }
+    .contact-email:hover { opacity: 0.5; }
+    @media (max-width: 768px) { .contact-email { font-size: 28px; word-break: break-all; } }
   `
-
   document.head.appendChild(style)
 }
 
 // ======================================================
-// WORKS (category selection screen)
+// WORKS
 // ======================================================
 
 function showWorks(options = {}) {
   const { pushHistory = true } = options
 
-  const oldWorks =
-    document.getElementById('worksOverlay')
+  ;['worksOverlay','galleryOverlay','contactOverlay','aboutOverlay'].forEach((id) => {
+    const el = document.getElementById(id)
+    if (el) el.remove()
+  })
 
-  if (oldWorks) {
-    oldWorks.remove()
-  }
-
-  const oldGallery =
-    document.getElementById('galleryOverlay')
-
-  if (oldGallery) {
-    oldGallery.remove()
-  }
-
-  const oldContact =
-    document.getElementById('contactOverlay')
-
-  if (oldContact) {
-    oldContact.remove()
-  }
-
-  if (pushHistory) {
-    history.pushState(
-      { works: true },
-      '',
-      ''
-    )
-  }
+  if (pushHistory) history.pushState({ works: true }, '', '')
 
   topMenu.style.display = 'none'
   underConstructionText.style.display = 'none'
@@ -800,436 +681,150 @@ function showWorks(options = {}) {
   injectWorksCSS()
 
   const overlay = document.createElement('div')
-
   overlay.id = 'worksOverlay'
-
   document.body.appendChild(overlay)
 
   overlay.innerHTML = `
-    <button id="closeWorksOverlay">
-      CLOSE
-    </button>
-
+    <button id="closeWorksOverlay">CLOSE</button>
     <div class="works-wrap">
-
-      <p class="works-brand">
-        PIMLICO ARTS JAPAN
-      </p>
-
-      <p class="works-label">
-        WORKS
-      </p>
-
+      <p class="works-brand">PIMLICO ARTS JAPAN</p>
+      <p class="works-label">WORKS</p>
       <nav class="works-list">
-
-        <button class="works-link" data-category="PHYSICAL">
-          Physical
-        </button>
-
-        <button class="works-link" data-category="VIDEO">
-          Videos
-        </button>
-
-        <button class="works-link" data-category="IMAGE">
-          Images
-        </button>
-
+        <button class="works-link" data-category="PHYSICAL">Physical</button>
+        <button class="works-link" data-category="VIDEO">Videos</button>
+        <button class="works-link" data-category="IMAGE">Images</button>
       </nav>
-
     </div>
   `
 
-  document
-    .getElementById('closeWorksOverlay')
-    .addEventListener(
-      'click',
-      () => {
-        history.back()
-      }
-    )
-
-  overlay
-    .querySelectorAll('.works-link')
-    .forEach((button) => {
-      button.addEventListener('click', () => {
-        const category = button.dataset.category
-
-        showGallery(category, null, { pushHistory: true })
-      })
+  document.getElementById('closeWorksOverlay').addEventListener('click', () => { history.back() })
+  overlay.querySelectorAll('.works-link').forEach((button) => {
+    button.addEventListener('click', () => {
+      showGallery(button.dataset.category, null, { pushHistory: true })
     })
+  })
 }
 
 function injectWorksCSS() {
-  if (
-    document.getElementById('worksStyle')
-  ) return
-
-  const style =
-    document.createElement('style')
-
+  if (document.getElementById('worksStyle')) return
+  const style = document.createElement('style')
   style.id = 'worksStyle'
-
   style.innerHTML = `
     #worksOverlay {
-      position: fixed;
-
-      top: 0;
-      left: 0;
-
-      width: 100%;
-      height: 100%;
-
-      z-index: 20000;
-
-      background: white;
-      color: black;
-
-      display: flex;
-
-      align-items: center;
-      justify-content: center;
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      z-index: 20000; background: white; color: black;
+      display: flex; align-items: center; justify-content: center;
     }
-
-    .works-wrap {
-      text-align: center;
-
-      padding: 0 24px;
-    }
-
-    .works-brand {
-      margin: 0 0 18px;
-
-      font-family: monospace;
-
-      font-size: 11px;
-
-      letter-spacing: 4px;
-
-      color: #888;
-    }
-
-    .works-label {
-      margin: 0 0 36px;
-
-      font-family: monospace;
-
-      font-size: 12px;
-
-      letter-spacing: 4px;
-
-      color: #888;
-    }
-
-    .works-list {
-      display: flex;
-
-      flex-direction: column;
-
-      align-items: center;
-
-      gap: 18px;
-    }
-
+    .works-wrap { text-align: center; padding: 0 24px; }
+    .works-brand { margin: 0 0 18px; font-family: monospace; font-size: 11px; letter-spacing: 4px; color: #888; }
+    .works-label { margin: 0 0 36px; font-family: monospace; font-size: 12px; letter-spacing: 4px; color: #888; }
+    .works-list { display: flex; flex-direction: column; align-items: center; gap: 18px; }
     .works-link {
-      background: transparent;
-
-      border: none;
-
-      cursor: pointer;
-
-      padding: 0;
-
-      font-family: 'FrutigerLight', sans-serif;
-
-      font-weight: 300;
-
-      font-size: clamp(34px, 7vw, 90px);
-
-      line-height: 0.95;
-
-      letter-spacing: -0.04em;
-
-      color: black;
-
-      transition: opacity 0.2s ease;
+      background: transparent; border: none; cursor: pointer; padding: 0;
+      font-family: 'FrutigerLight', sans-serif; font-weight: 300;
+      font-size: clamp(34px, 7vw, 90px); line-height: 0.95; letter-spacing: -0.04em;
+      color: black; transition: opacity 0.2s ease;
     }
-
-    .works-link:hover {
-      opacity: 0.5;
-    }
-
-    @media (max-width: 768px) {
-      .works-link {
-        font-size: 48px;
-      }
-
-      .works-list {
-        gap: 14px;
-      }
-    }
+    .works-link:hover { opacity: 0.5; }
+    @media (max-width: 768px) { .works-link { font-size: 48px; } .works-list { gap: 14px; } }
   `
-
   document.head.appendChild(style)
 }
+
+// ======================================================
+// GALLERY
+// ======================================================
 
 function showGallery(category, selectedPath, options = {}) {
   const { pushHistory = true } = options
 
-  const old =
-    document.getElementById('galleryOverlay')
+  ;['galleryOverlay','worksOverlay','contactOverlay','aboutOverlay'].forEach((id) => {
+    const el = document.getElementById(id)
+    if (el) el.remove()
+  })
 
-  if (old) {
-    old.remove()
-  }
-
-  const oldWorks =
-    document.getElementById('worksOverlay')
-
-  if (oldWorks) {
-    oldWorks.remove()
-  }
-
-  const oldContact =
-    document.getElementById('contactOverlay')
-
-  if (oldContact) {
-    oldContact.remove()
-  }
-
-  if (pushHistory) {
-    history.pushState(
-      { gallery: true, category, selectedPath },
-      '',
-      ''
-    )
-  }
+  if (pushHistory) history.pushState({ gallery: true, category, selectedPath }, '', '')
 
   topMenu.style.display = 'none'
   underConstructionText.style.display = 'none'
 
   const overlay = document.createElement('div')
-
   overlay.id = 'galleryOverlay'
-
-  overlay.style.position = 'fixed'
-  overlay.style.top = '0'
-  overlay.style.left = '0'
-  overlay.style.width = '100%'
-  overlay.style.height = '100%'
-  overlay.style.zIndex = '20000'
-  overlay.style.background = 'white'
-  overlay.style.color = 'black'
-  overlay.style.overflowY = 'scroll'
-  overlay.style.WebkitOverflowScrolling = 'touch'
-
-  // Hide the overlay visually until we've scrolled to the right
-  // place, so the user never sees the "wrong card then jump to
-  // correct card" flash.
-  overlay.style.visibility = 'hidden'
-
+  overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:20000;background:white;color:black;overflow-y:scroll;-webkit-overflow-scrolling:touch;visibility:hidden;'
   document.body.appendChild(overlay)
 
   injectGalleryCSS()
 
-  const items =
-    contentItems.filter(
-      (item) =>
-        item.category === category
-    )
+  const items = contentItems.filter((item) => item.category === category)
+
+  const categoryDisplayNames = { PHYSICAL: 'PHYSICAL WORK', VIDEO: 'VIDEO WORK', IMAGE: 'IMAGE WORK' }
 
   function createCards(loopIndex) {
-    const categoryDisplayNames = {
-      PHYSICAL: 'PHYSICAL WORK',
-      VIDEO: 'VIDEO WORK',
-      IMAGE: 'IMAGE WORK'
-    }
-
-    return items
-      .map((item) => {
-        const isSelected =
-          item.path === selectedPath &&
-          loopIndex === 1
-
-        const mediaHTML =
-          item.type === 'video'
-            ? `
-              <video
-                src="${item.path}"
-                autoplay
-                loop
-                muted
-                playsinline
-                controls
-                preload="auto"
-              ></video>
-            `
-            : `
-              <img src="${item.path}" />
-            `
-
-        return `
-          <article
-            class="gallery-card"
-            ${isSelected ? 'id="selectedCard"' : ''}
-          >
-
-            <div class="media-box">
-              ${mediaHTML}
-            </div>
-
-            <div class="text-box">
-
-              <p class="category-label">
-                ${categoryDisplayNames[item.category] || item.category}
-              </p>
-
-              <h2>
-                ${item.title}
-              </h2>
-
-              <p class="caption">
-                ${item.caption}
-              </p>
-
-              <p class="year">
-                ${item.year}
-              </p>
-
-            </div>
-
-          </article>
-        `
-      })
-      .join('')
+    return items.map((item) => {
+      const isSelected = item.path === selectedPath && loopIndex === 1
+      const mediaHTML = item.type === 'video'
+        ? `<video src="${item.path}" autoplay loop muted playsinline controls preload="auto"></video>`
+        : `<img src="${item.path}" />`
+      return `
+        <article class="gallery-card" ${isSelected ? 'id="selectedCard"' : ''}>
+          <div class="media-box">${mediaHTML}</div>
+          <div class="text-box">
+            <p class="category-label">${categoryDisplayNames[item.category] || item.category}</p>
+            <h2>${item.title}</h2>
+            <p class="caption">${item.caption}</p>
+            <p class="year">${item.year}</p>
+          </div>
+        </article>
+      `
+    }).join('')
   }
 
   overlay.innerHTML = `
-    <button id="closeOverlay">
-      CLOSE
-    </button>
-
+    <button id="closeOverlay">CLOSE</button>
     <section class="gallery-wrap">
-
       <header class="gallery-header">
-
-        <p>
-          PIMLICO ARTS JAPAN
-        </p>
-
-        <h1>
-          ${category}
-        </h1>
-
+        <p>PIMLICO ARTS JAPAN</p>
+        <h1>${category}</h1>
       </header>
-
       <div class="gallery-list">
-
-        <div class="gallery-loop">
-          ${createCards(0)}
-        </div>
-
-        <div class="gallery-loop">
-          ${createCards(1)}
-        </div>
-
-        <div class="gallery-loop">
-          ${createCards(2)}
-        </div>
-
+        <div class="gallery-loop">${createCards(0)}</div>
+        <div class="gallery-loop">${createCards(1)}</div>
+        <div class="gallery-loop">${createCards(2)}</div>
       </div>
-
     </section>
   `
 
-  document
-    .getElementById('closeOverlay')
-    .addEventListener(
-      'click',
-      () => {
-        // Go back in history instead of closing directly, so the
-        // pushed gallery history entry is consumed and the browser's
-        // back button stays in sync with the app state.
-        history.back()
-      }
-    )
+  document.getElementById('closeOverlay').addEventListener('click', () => { history.back() })
 
-  // --- Scroll to the selected card only after its media (and
-  // everything above it, which affects its position) has finished
-  // loading, so the layout is final BEFORE we scroll. This fixes the
-  // "jumps to the wrong card" issue caused by images/videos resizing
-  // after the scroll already happened. ---
   const firstLoop = overlay.querySelector('.gallery-loop')
-  const secondLoop = firstLoop
-    ? firstLoop.nextElementSibling
-    : null
-
+  const secondLoop = firstLoop ? firstLoop.nextElementSibling : null
   const mediaToWaitFor = []
-
   if (firstLoop) mediaToWaitFor.push(firstLoop)
   if (secondLoop) mediaToWaitFor.push(secondLoop)
 
-  Promise.all(
-    mediaToWaitFor.map((loopEl) => waitForMediaLoaded(loopEl))
-  ).then(() => {
+  Promise.all(mediaToWaitFor.map((loopEl) => waitForMediaLoaded(loopEl))).then(() => {
     requestAnimationFrame(() => {
-      const selected =
-        document.getElementById('selectedCard')
-
-      if (selected) {
-        selected.scrollIntoView({
-          behavior: 'instant',
-          block: 'center'
-        })
-      }
-
+      const selected = document.getElementById('selectedCard')
+      if (selected) selected.scrollIntoView({ behavior: 'instant', block: 'center' })
       overlay.style.visibility = 'visible'
     })
   })
 
-  // ----------------------------------------------------
-  // Infinite scroll loop correction
-  // ----------------------------------------------------
-  // Cache the loop height via ResizeObserver instead of re-reading
-  // offsetHeight on every scroll event. This avoids using a stale or
-  // mid-reflow height value while images/videos are still loading,
-  // which previously caused visible jumps/glitches during scrolling.
   let loopHeight = 0
-
-  const loopForHeight =
-    overlay.querySelector('.gallery-loop')
-
-  let resizeObserver = null
-
+  const loopForHeight = overlay.querySelector('.gallery-loop')
   if (loopForHeight) {
-    resizeObserver = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        loopHeight = entry.contentRect.height
-      }
+    const ro = new ResizeObserver((entries) => {
+      for (const entry of entries) loopHeight = entry.contentRect.height
     })
-
-    resizeObserver.observe(loopForHeight)
+    ro.observe(loopForHeight)
   }
 
-  const margin = 2 // px tolerance to avoid sub-pixel misfires
-
-  overlay.addEventListener(
-    'scroll',
-    () => {
-      if (!loopHeight) return
-
-      if (
-        overlay.scrollTop >= loopHeight * 2 - margin
-      ) {
-        overlay.scrollTop -= loopHeight
-      }
-
-      if (
-        overlay.scrollTop <= margin
-      ) {
-        overlay.scrollTop += loopHeight
-      }
-    }
-  )
+  const margin = 2
+  overlay.addEventListener('scroll', () => {
+    if (!loopHeight) return
+    if (overlay.scrollTop >= loopHeight * 2 - margin) overlay.scrollTop -= loopHeight
+    if (overlay.scrollTop <= margin) overlay.scrollTop += loopHeight
+  })
 }
 
 // ======================================================
@@ -1237,406 +832,74 @@ function showGallery(category, selectedPath, options = {}) {
 // ======================================================
 
 function injectGalleryCSS() {
-  if (
-    document.getElementById('galleryStyle')
-  ) return
-
-  const style =
-    document.createElement('style')
-
+  if (document.getElementById('galleryStyle')) return
+  const style = document.createElement('style')
   style.id = 'galleryStyle'
-
   style.innerHTML = `
     #leftLogo {
-      position: fixed;
-
-      left: 28px;
-      bottom: 28px;
-
-      width: 96px;
-      height: auto;
-
-      z-index: 9500;
-
-      opacity: 0.45;
-
-      pointer-events: none;
-
-      user-select: none;
+      position: fixed; left: 28px; bottom: 28px; width: 96px; height: auto;
+      z-index: 9500; opacity: 0.45; pointer-events: none; user-select: none;
     }
-
     #underConstructionText {
-      position: fixed;
-
-      left: 50%;
-      top: 50%;
-
-      transform:
-        translate(-50%, -50%);
-
-      z-index: 18000;
-
-      font-family:
-        'FrutigerLight',
-        'FrutigerRoman',
-        sans-serif;
-
-      font-size:
-        clamp(54px, 11vw, 190px);
-
-      font-weight: 300;
-
-      line-height: 0.82;
-
-      letter-spacing: -0.08em;
-
-      color: rgba(0, 0, 0, 0.16);
-
-      text-align: center;
-
-      white-space: nowrap;
-
-      pointer-events: none;
-
-      user-select: none;
-
-      mix-blend-mode: normal;
+      position: fixed; left: 50%; top: 50%; transform: translate(-50%,-50%);
+      z-index: 18000; font-family: 'FrutigerLight','FrutigerRoman',sans-serif;
+      font-size: clamp(54px,11vw,190px); font-weight: 300; line-height: 0.82;
+      letter-spacing: -0.08em; color: rgba(0,0,0,0.16); text-align: center;
+      white-space: nowrap; pointer-events: none; user-select: none;
     }
-
     #topMenu {
-      position: fixed;
-
-      top: 28px;
-      right: 42px;
-
-      z-index: 19000;
-
-      display: flex;
-
-      flex-direction: column;
-
-      align-items: flex-end;
-
-      gap: 10px;
+      position: fixed; top: 28px; right: 42px; z-index: 19000;
+      display: flex; flex-direction: column; align-items: flex-end; gap: 10px;
     }
-
     #topMenu button {
-      background: transparent;
-
-      border: none;
-
-      color: black;
-
-      cursor: pointer;
-
-      padding: 0;
-
-      font-size: 12px;
-
-      letter-spacing: 1px;
-
-      font-family:
-        monospace;
-
-      transition:
-        opacity 0.2s ease;
+      background: transparent; border: none; color: black; cursor: pointer; padding: 0;
+      font-size: 12px; letter-spacing: 1px; font-family: monospace; transition: opacity 0.2s ease;
     }
-
-    #topMenu button:hover {
-      opacity: 0.4;
-    }
-
+    #topMenu button:hover { opacity: 0.4; }
     #closeOverlay {
-      position: fixed;
-
-      top: 28px;
-      right: 42px;
-
-      z-index: 30000;
-
-      border: 1px solid black;
-
-      background: black;
-
-      color: white;
-
-      padding: 12px 20px;
-
-      border-radius: 999px;
-
-      font-size: 11px;
-
-      letter-spacing: 2px;
-
-      cursor: pointer;
-
-      font-family:
-        monospace;
+      position: fixed; top: 28px; right: 42px; z-index: 30000;
+      border: 1px solid black; background: black; color: white;
+      padding: 12px 20px; border-radius: 999px; font-size: 11px;
+      letter-spacing: 2px; cursor: pointer; font-family: monospace;
     }
-
-    .gallery-wrap {
-      width: min(1360px, 94vw);
-
-      margin: 0 auto;
-
-      padding: 90px 0 110px;
-
-      box-sizing: border-box;
-    }
-
-    .gallery-header {
-      text-align: center;
-
-      margin-bottom: 80px;
-    }
-
-    .gallery-header p {
-      margin: 0 0 18px;
-
-      font-family:
-        monospace;
-
-      font-size: 11px;
-
-      letter-spacing: 4px;
-
-      color: #888;
-    }
-
-    .gallery-header h1 {
-      margin: 0;
-
-      font-family:
-        'FrutigerLight',
-        sans-serif;
-
-      font-size:
-        clamp(64px, 13vw, 180px);
-
-      line-height: 0.88;
-
-      letter-spacing: -0.08em;
-
-      font-weight: 300;
-    }
-
-    .gallery-list {
-      display: flex;
-
-      flex-direction: column;
-
-      gap: 90px;
-    }
-
-    .gallery-loop {
-      display: flex;
-
-      flex-direction: column;
-
-      gap: 90px;
-    }
-
-    .gallery-card {
-      display: grid;
-
-      grid-template-columns:
-        1.45fr 0.55fr;
-
-      gap: 34px;
-
-      align-items: center;
-
-      padding-bottom: 90px;
-
-      border-bottom:
-        1px solid rgba(0,0,0,0.08);
-    }
-
-    .media-box {
-      width: 100%;
-
-      background: transparent;
-
-      border-radius: 0 !important;
-
-      overflow: visible;
-    }
-
-    .media-box img,
-    .media-box video {
-      display: block;
-
-      width: 100%;
-
-      height: auto;
-
-      max-height: 86vh;
-
-      object-fit: contain;
-
-      background: transparent;
-
-      border-radius: 0 !important;
-    }
-
-    .category-label {
-      margin: 0 0 18px;
-
-      font-family:
-        monospace;
-
-      font-size: 11px;
-
-      letter-spacing: 3px;
-
-      color: #888;
-    }
-
-    .text-box h2 {
-      margin: 0 0 22px;
-
-      font-family:
-        'FrutigerLight',
-        sans-serif;
-
-      font-size:
-        clamp(34px, 5vw, 74px);
-
-      line-height: 0.95;
-
-      letter-spacing: -0.06em;
-
-      font-weight: 300;
-    }
-
-    .caption {
-      margin: 0 0 24px;
-
-      font-family:
-        monospace;
-
-      font-size: 14px;
-
-      line-height: 1.9;
-
-      color: #333;
-
-      white-space: pre-line;
-    }
-
-    .year {
-      margin: 0;
-
-      font-family:
-        monospace;
-
-      font-size: 12px;
-
-      letter-spacing: 2px;
-
-      color: #999;
-    }
-
+    .gallery-wrap { width: min(1360px,94vw); margin: 0 auto; padding: 90px 0 110px; box-sizing: border-box; }
+    .gallery-header { text-align: center; margin-bottom: 80px; }
+    .gallery-header p { margin: 0 0 18px; font-family: monospace; font-size: 11px; letter-spacing: 4px; color: #888; }
+    .gallery-header h1 { margin: 0; font-family: 'FrutigerLight',sans-serif; font-size: clamp(64px,13vw,180px); line-height: 0.88; letter-spacing: -0.08em; font-weight: 300; }
+    .gallery-list { display: flex; flex-direction: column; gap: 90px; }
+    .gallery-loop { display: flex; flex-direction: column; gap: 90px; }
+    .gallery-card { display: grid; grid-template-columns: 1.45fr 0.55fr; gap: 34px; align-items: center; padding-bottom: 90px; border-bottom: 1px solid rgba(0,0,0,0.08); }
+    .media-box { width: 100%; background: transparent; overflow: visible; }
+    .media-box img, .media-box video { display: block; width: 100%; height: auto; max-height: 86vh; object-fit: contain; background: transparent; }
+    .category-label { margin: 0 0 18px; font-family: monospace; font-size: 11px; letter-spacing: 3px; color: #888; }
+    .text-box h2 { margin: 0 0 22px; font-family: 'FrutigerLight',sans-serif; font-size: clamp(34px,5vw,74px); line-height: 0.95; letter-spacing: -0.06em; font-weight: 300; }
+    .caption { margin: 0 0 24px; font-family: monospace; font-size: 14px; line-height: 1.9; color: #333; white-space: pre-line; }
+    .year { margin: 0; font-family: monospace; font-size: 12px; letter-spacing: 2px; color: #999; }
     @media (max-width: 768px) {
-      #leftLogo {
-        left: 18px;
-        bottom: 18px;
-
-        width: 52px;
-
-        opacity: 0.45;
-      }
-
-      #underConstructionText {
-        font-size: 16vw;
-
-        letter-spacing: -0.08em;
-
-        white-space: normal;
-
-        width: 92vw;
-
-        color: rgba(0, 0, 0, 0.15);
-      }
-
-      #topMenu {
-        top: 20px;
-        right: 24px;
-
-        gap: 8px;
-      }
-
-      #topMenu button {
-        font-size: 10px;
-      }
-
-      #closeOverlay {
-        top: 20px;
-        right: 24px;
-
-        padding: 10px 15px;
-
-        font-size: 10px;
-      }
-
-      .gallery-wrap {
-        width: 94vw;
-
-        padding: 82px 0 96px;
-      }
-
-      .gallery-header {
-        margin-bottom: 50px;
-      }
-
-      .gallery-card {
-        display: flex;
-
-        flex-direction: column;
-
-        align-items: stretch;
-
-        gap: 22px;
-
-        padding-bottom: 64px;
-      }
-
-      .gallery-list {
-        gap: 64px;
-      }
-
-      .gallery-loop {
-        gap: 64px;
-      }
-
-      .media-box img,
-      .media-box video {
-        max-height: 82vh;
-      }
-
-      .gallery-header h1 {
-        font-size: 72px;
-      }
-
-      .text-box h2 {
-        font-size: 42px;
-      }
-
-      .caption {
-        font-size: 13px;
-
-        line-height: 1.8;
-      }
+      #leftLogo { left: 18px; bottom: 18px; width: 52px; }
+      #underConstructionText { font-size: 16vw; white-space: normal; width: 92vw; color: rgba(0,0,0,0.15); }
+      #topMenu { top: 20px; right: 24px; gap: 8px; }
+      #topMenu button { font-size: 10px; }
+      #closeOverlay { top: 20px; right: 24px; padding: 10px 15px; font-size: 10px; }
+      .gallery-wrap { width: 94vw; padding: 82px 0 96px; }
+      .gallery-header { margin-bottom: 50px; }
+      .gallery-card { display: flex; flex-direction: column; align-items: stretch; gap: 22px; padding-bottom: 64px; }
+      .gallery-list { gap: 64px; }
+      .gallery-loop { gap: 64px; }
+      .media-box img, .media-box video { max-height: 82vh; }
+      .gallery-header h1 { font-size: 72px; }
+      .text-box h2 { font-size: 42px; }
+      .caption { font-size: 13px; line-height: 1.8; }
     }
   `
-
   document.head.appendChild(style)
 }
 
 injectGalleryCSS()
 
+window.__showAbout   = showAbout
 window.__showContact = showContact
-window.__showWorks = showWorks
+window.__showWorks   = showWorks
 
 // ======================================================
 // ANIMATE
@@ -1644,18 +907,9 @@ window.__showWorks = showWorks
 
 function animate() {
   requestAnimationFrame(animate)
-
-  scene.rotation.y +=
-    isMobile
-      ? 0.00008
-      : 0.00015
-
+  scene.rotation.y += isMobile ? 0.00008 : 0.00015
   controls.update()
-
-  for (const mesh of meshes) {
-    mesh.lookAt(camera.position)
-  }
-
+  for (const mesh of meshes) mesh.lookAt(camera.position)
   renderer.render(scene, camera)
 }
 
@@ -1665,24 +919,9 @@ animate()
 // RESIZE
 // ======================================================
 
-window.addEventListener(
-  'resize',
-  () => {
-    camera.aspect =
-      window.innerWidth / window.innerHeight
-
-    camera.updateProjectionMatrix()
-
-    renderer.setSize(
-      window.innerWidth,
-      window.innerHeight
-    )
-
-    renderer.setPixelRatio(
-      Math.min(
-        window.devicePixelRatio,
-        isMobile ? 1 : 1.5
-      )
-    )
-  }
-)
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight
+  camera.updateProjectionMatrix()
+  renderer.setSize(window.innerWidth, window.innerHeight)
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1 : 1.5))
+})
