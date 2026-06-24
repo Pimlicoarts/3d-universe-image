@@ -121,7 +121,7 @@ const topMenu = document.createElement('div')
 topMenu.id = 'topMenu'
 
 topMenu.innerHTML = `
-  <button onclick="window.__showAbout && window.__showAbout()">ABOUT</button>
+  <button id="aboutBtn">ABOUT</button>
 
   <button onclick="window.__showWorks && window.__showWorks()">WORKS</button>
 
@@ -146,6 +146,7 @@ topMenu.innerHTML = `
 
 document.body.appendChild(topMenu)
 
+document.getElementById('aboutBtn').addEventListener('click', () => showAbout())
 
 // ======================================================
 // CONTENTS
@@ -499,7 +500,7 @@ function showAbout(options = {}) {
   document.body.appendChild(overlay)
 
   overlay.innerHTML = `
-    <button id="closeAboutOverlay">CLOSE</button>
+    <button id="closeAboutOverlay">Top</button>
 
     <div class="about-inner">
       <p class="about-label">ABOUT</p>
@@ -539,21 +540,7 @@ function injectAboutCSS() {
       overflow: hidden;
     }
 
-    #closeAboutOverlay {
-      position: fixed;
-      top: 28px;
-      right: 42px;
-      z-index: 30000;
-      border: 1px solid black;
-      background: black;
-      color: white;
-      padding: 12px 20px;
-      border-radius: 999px;
-      font-size: 11px;
-      letter-spacing: 2px;
-      cursor: pointer;
-      font-family: monospace;
-    }
+
 
     .about-inner {
       width: min(860px, 88vw);
@@ -579,12 +566,7 @@ function injectAboutCSS() {
     }
 
     @media (max-width: 768px) {
-      #closeAboutOverlay {
-        top: 20px;
-        right: 24px;
-        padding: 10px 15px;
-        font-size: 10px;
-      }
+
 
       .about-inner {
         width: 88vw;
@@ -625,7 +607,7 @@ function showContact(options = {}) {
   document.body.appendChild(overlay)
 
   overlay.innerHTML = `
-    <button id="closeContactOverlay">CLOSE</button>
+    <button id="closeContactOverlay">Top</button>
     <div class="contact-wrap">
       <p class="contact-label">CONTACT</p>
       <button id="contactEmailLogo" class="contact-email">pimlicoarts@gmail.com</button>
@@ -685,7 +667,7 @@ function showWorks(options = {}) {
   document.body.appendChild(overlay)
 
   overlay.innerHTML = `
-    <button id="closeWorksOverlay">CLOSE</button>
+    <button id="closeWorksOverlay">Top</button>
     <div class="works-wrap">
       <p class="works-brand">PIMLICO ARTS JAPAN</p>
       <p class="works-label">WORKS</p>
@@ -780,7 +762,7 @@ function showGallery(category, selectedPath, options = {}) {
   }
 
   overlay.innerHTML = `
-    <button id="closeOverlay">CLOSE</button>
+    <button id="closeOverlay">Top</button>
     <section class="gallery-wrap">
       <header class="gallery-header">
         <p>PIMLICO ARTS JAPAN</p>
@@ -856,17 +838,26 @@ function injectGalleryCSS() {
       font-size: 12px; letter-spacing: 1px; font-family: monospace; transition: opacity 0.2s ease;
     }
     #topMenu button:hover { opacity: 0.4; }
-    #closeOverlay {
-      position: fixed; top: 28px; right: 42px; z-index: 30000;
-      border: 1px solid black; background: black; color: white;
-      padding: 12px 20px; border-radius: 999px; font-size: 11px;
-      letter-spacing: 2px; cursor: pointer; font-family: monospace;
+    #closeOverlay,
+    #closeAboutOverlay,
+    #closeContactOverlay,
+    #closeWorksOverlay {
+      position: fixed; top: -10px; right: -10px; z-index: 30000;
+      width: 220px; height: 220px; border: none; outline: none;
+      background: url('/images/Dot_10.PNG') center center / contain no-repeat;
+      background-color: transparent; color: white;
+      font-family: monospace; font-size: 12px; letter-spacing: 2px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: opacity .2s ease;
     }
     .gallery-wrap { width: min(1360px,94vw); margin: 0 auto; padding: 90px 0 110px; box-sizing: border-box; }
     .gallery-header { text-align: center; margin-bottom: 80px; }
     .gallery-header p { margin: 0 0 18px; font-family: monospace; font-size: 11px; letter-spacing: 4px; color: #888; }
     .gallery-header h1 { margin: 0; font-family: 'FrutigerLight',sans-serif; font-size: clamp(64px,13vw,180px); line-height: 0.88; letter-spacing: -0.08em; font-weight: 300; }
-    .gallery-list { display: flex; flex-direction: column; gap: 90px; }
+    #closeOverlay,
+    #closeAboutOverlay,
+    #closeContactOverlay,
+    #closeWorksOverlay {
     .gallery-loop { display: flex; flex-direction: column; gap: 90px; }
     .gallery-card { display: grid; grid-template-columns: 1.45fr 0.55fr; gap: 34px; align-items: center; padding-bottom: 90px; border-bottom: 1px solid rgba(0,0,0,0.08); }
     .media-box { width: 100%; background: transparent; overflow: visible; }
