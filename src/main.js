@@ -330,13 +330,13 @@ During the exhibition, I had conversations with people from the United States, C
   },
 
   {
-  type: 'video',
-  path: '/videos/vid_06.MP4',
-  title: 'PLX DATA ARC MATRIX VIDEO',
-  category: 'VIDEO',
-  caption: 'Moving image archive.',
-  year: '2026'
-}
+    type: 'video',
+    path: '/videos/vid_06.MP4',
+    title: 'PLX DATA ARC MATRIX VIDEO',
+    category: 'VIDEO',
+    caption: 'Moving image archive.',
+    year: '2026'
+  }
 ]
 
 // ======================================================
@@ -852,29 +852,28 @@ function injectGalleryCSS() {
       font-size: 12px; letter-spacing: 1px; font-family: monospace; transition: opacity 0.2s ease;
     }
     #topMenu button:hover { opacity: 0.4; }
-   #closeOverlay,
-#closeAboutOverlay,
-#closeContactOverlay,
-#closeWorksOverlay {
-  position: fixed;
-  top: 28px;
-  right: 42px;
-  z-index: 30000;
-  width: 90px;
-  height: 90px;
-  border: none;
-  outline: none;
-  background: url('/images/Dot_10.PNG') center center / contain no-repeat;
-  background-color: transparent;
-  color: white;
-  font-family: monospace;
-  font-size: 12px;
-  letter-spacing: 2px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+    #closeOverlay,
+    #closeAboutOverlay,
+    #closeContactOverlay,
+    #closeWorksOverlay {
+      position: fixed;
+      top: 28px;
+      right: 42px;
+      z-index: 30000;
+      width: 120px;
+      height: 120px;
+      border: none;
+      outline: none;
+      background: url('/images/Dot_10.PNG') center center / contain no-repeat;
+      background-color: transparent;
+      color: white;
+      font-family: monospace;
+      font-size: 12px;
+      letter-spacing: 2px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     #closeOverlay:hover,
     #closeAboutOverlay:hover,
@@ -889,8 +888,8 @@ function injectGalleryCSS() {
       #closeWorksOverlay {
         top: 20px;
         right: 24px;
-        width: 70px;
-        height: 70px;
+        width: 90px;
+        height: 90px;
         font-size: 10px;
       }
     }
