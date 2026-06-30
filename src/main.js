@@ -121,7 +121,7 @@ const topMenu = document.createElement('div')
 topMenu.id = 'topMenu'
 
 topMenu.innerHTML = `
-  <button id="aboutBtn">ABOUT</button>
+  <button onclick="window.__showAbout && window.__showAbout()">ABOUT</button>
 
   <button onclick="window.__showWorks && window.__showWorks()">WORKS</button>
 
@@ -145,8 +145,6 @@ topMenu.innerHTML = `
 `
 
 document.body.appendChild(topMenu)
-
-document.getElementById('aboutBtn').addEventListener('click', () => showAbout())
 
 // ======================================================
 // CONTENTS
@@ -329,7 +327,16 @@ During the exhibition, I had conversations with people from the United States, C
     category: 'IMAGE',
     caption: 'Future archaeological imagery generated from collected waste.',
     year: '2026'
-  }
+  },
+
+  {
+  type: 'video',
+  path: '/videos/vid_06.MP4',
+  title: 'PLX DATA ARC MATRIX VIDEO',
+  category: 'VIDEO',
+  caption: 'Moving image archive.',
+  year: '2026'
+}
 ]
 
 // ======================================================
@@ -540,7 +547,7 @@ function injectAboutCSS() {
       overflow: hidden;
     }
 
-
+    /* closeAboutOverlay: 共通CSSに統合済み */
 
     .about-inner {
       width: min(860px, 88vw);
@@ -566,7 +573,12 @@ function injectAboutCSS() {
     }
 
     @media (max-width: 768px) {
-
+      #closeAboutOverlay {
+        top: 20px;
+        right: 24px;
+        padding: 10px 15px;
+        font-size: 10px;
+      }
 
       .about-inner {
         width: 88vw;
@@ -630,6 +642,7 @@ function injectContactCSS() {
       z-index: 20000; background: white; color: black;
       display: flex; align-items: center; justify-content: center;
     }
+    /* closeContactOverlay: 共通CSSに統合済み */
     .contact-wrap { text-align: center; padding: 0 24px; }
     .contact-label { margin: 0 0 28px; font-family: monospace; font-size: 12px; letter-spacing: 4px; color: #888; }
     .contact-email {
@@ -697,6 +710,7 @@ function injectWorksCSS() {
       z-index: 20000; background: white; color: black;
       display: flex; align-items: center; justify-content: center;
     }
+    /* closeWorksOverlay: 共通CSSに統合済み */
     .works-wrap { text-align: center; padding: 0 24px; }
     .works-brand { margin: 0 0 18px; font-family: monospace; font-size: 11px; letter-spacing: 4px; color: #888; }
     .works-label { margin: 0 0 36px; font-family: monospace; font-size: 12px; letter-spacing: 4px; color: #888; }
@@ -838,26 +852,53 @@ function injectGalleryCSS() {
       font-size: 12px; letter-spacing: 1px; font-family: monospace; transition: opacity 0.2s ease;
     }
     #topMenu button:hover { opacity: 0.4; }
-    #closeOverlay,
-    #closeAboutOverlay,
-    #closeContactOverlay,
-    #closeWorksOverlay {
-      position: fixed; top: -10px; right: -10px; z-index: 30000;
-      width: 220px; height: 220px; border: none; outline: none;
-      background: url('/images/Dot_10.PNG') center center / contain no-repeat;
-      background-color: transparent; color: white;
-      font-family: monospace; font-size: 12px; letter-spacing: 2px;
-      cursor: pointer; display: flex; align-items: center; justify-content: center;
-      transition: opacity .2s ease;
+   #closeOverlay,
+#closeAboutOverlay,
+#closeContactOverlay,
+#closeWorksOverlay {
+  position: fixed;
+  top: 28px;
+  right: 42px;
+  z-index: 30000;
+  width: 90px;
+  height: 90px;
+  border: none;
+  outline: none;
+  background: url('/images/Dot_10.PNG') center center / contain no-repeat;
+  background-color: transparent;
+  color: white;
+  font-family: monospace;
+  font-size: 12px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+    }
+    #closeOverlay:hover,
+    #closeAboutOverlay:hover,
+    #closeContactOverlay:hover,
+    #closeWorksOverlay:hover {
+      opacity: .7;
+    }
+    @media (max-width: 768px) {
+      #closeOverlay,
+      #closeAboutOverlay,
+      #closeContactOverlay,
+      #closeWorksOverlay {
+        top: 20px;
+        right: 24px;
+        width: 70px;
+        height: 70px;
+        font-size: 10px;
+      }
     }
     .gallery-wrap { width: min(1360px,94vw); margin: 0 auto; padding: 90px 0 110px; box-sizing: border-box; }
     .gallery-header { text-align: center; margin-bottom: 80px; }
     .gallery-header p { margin: 0 0 18px; font-family: monospace; font-size: 11px; letter-spacing: 4px; color: #888; }
     .gallery-header h1 { margin: 0; font-family: 'FrutigerLight',sans-serif; font-size: clamp(64px,13vw,180px); line-height: 0.88; letter-spacing: -0.08em; font-weight: 300; }
-    #closeOverlay,
-    #closeAboutOverlay,
-    #closeContactOverlay,
-    #closeWorksOverlay {
+    .gallery-list { display: flex; flex-direction: column; gap: 90px; }
     .gallery-loop { display: flex; flex-direction: column; gap: 90px; }
     .gallery-card { display: grid; grid-template-columns: 1.45fr 0.55fr; gap: 34px; align-items: center; padding-bottom: 90px; border-bottom: 1px solid rgba(0,0,0,0.08); }
     .media-box { width: 100%; background: transparent; overflow: visible; }
@@ -871,7 +912,6 @@ function injectGalleryCSS() {
       #underConstructionText { font-size: 16vw; white-space: normal; width: 92vw; color: rgba(0,0,0,0.15); }
       #topMenu { top: 20px; right: 24px; gap: 8px; }
       #topMenu button { font-size: 10px; }
-      #closeOverlay { top: 20px; right: 24px; padding: 10px 15px; font-size: 10px; }
       .gallery-wrap { width: 94vw; padding: 82px 0 96px; }
       .gallery-header { margin-bottom: 50px; }
       .gallery-card { display: flex; flex-direction: column; align-items: stretch; gap: 22px; padding-bottom: 64px; }
@@ -891,6 +931,8 @@ injectGalleryCSS()
 window.__showAbout   = showAbout
 window.__showContact = showContact
 window.__showWorks   = showWorks
+
+// ABOUTボタンは onclick="window.__showAbout()" で呼び出し済み
 
 // ======================================================
 // ANIMATE
