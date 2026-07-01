@@ -853,7 +853,7 @@ function injectGalleryCSS() {
     #underConstructionText {
       position: fixed; left: 50%; bottom: 5%; transform: translate(-50%);
       z-index: 18000; font-family: 'FrutigerLight','FrutigerRoman',sans-serif;
-      font-size: clamp(36px,6vw,60px); font-weight: 300; line-height: 0.82;
+      font-size: clamp(48px,8vw,80px); font-weight: 300; line-height: 0.82;
       letter-spacing: -0.08em; color: rgba(0,0,0,0.16); text-align: center;
       white-space: nowrap; pointer-events: none; user-select: none;
     }
