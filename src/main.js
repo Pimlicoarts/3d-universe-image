@@ -572,7 +572,7 @@ function injectAboutCSS() {
 
     @media (max-width: 768px) {
       #closeAboutOverlay {
-        top: 20px;
+        top: 0px;
         right: 24px;
         padding: 10px 15px;
         font-size: 10px;
@@ -855,8 +855,8 @@ function injectGalleryCSS() {
     #closeContactOverlay,
     #closeWorksOverlay {
       position: fixed;
-      top: 20px;
-      right: 20px;
+      top: 0px;
+      right: 0px;
       z-index: 30000;
       width: 240px;
       height: 240px;
@@ -884,7 +884,7 @@ function injectGalleryCSS() {
       #closeAboutOverlay,
       #closeContactOverlay,
       #closeWorksOverlay {
-        top: 20px;
+        top: 0px;
         right: 24px;
         width: 240px;
         height: 240px;
@@ -907,7 +907,7 @@ function injectGalleryCSS() {
     @media (max-width: 768px) {
       #leftLogo { left: 18px; bottom: 18px; width: 52px; }
       #underConstructionText { font-size: 16vw; white-space: normal; width: 92vw; color: rgba(0,0,0,0.15); }
-      #topMenu { top: 20px; right: 42px; gap: 8px; }
+      #topMenu { top: 0px; right: 42px; gap: 8px; }
       #topMenu button { font-size: 10px; }
       .gallery-wrap { width: 94vw; padding: 82px 0 96px; }
       .gallery-header { margin-bottom: 50px; }
