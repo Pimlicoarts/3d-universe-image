@@ -857,8 +857,8 @@ function injectGalleryCSS() {
     #closeContactOverlay,
     #closeWorksOverlay {
       position: fixed;
-      top: 10px;
-      right: 10px;
+      top: 0px;
+      right: 0px;
       z-index: 30000;
       width: 400px;
       height: 400px;
