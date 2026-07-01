@@ -855,18 +855,18 @@ function injectGalleryCSS() {
     #closeContactOverlay,
     #closeWorksOverlay {
       position: fixed;
-      top: 0px;
-      right: 0px;
+      top: 20px;
+      right: 20px;
       z-index: 30000;
-      width: 120px;
-      height: 120px;
+      width: 80px;
+      height: 80px;
       border: none;
       outline: none;
       background: url('/images/Dot_10.PNG') center center / contain no-repeat;
       background-color: transparent;
       color: black;
       font-family: monospace;
-      font-size: 12px;
+      font-size: 18px;
       letter-spacing: 2px;
       cursor: pointer;
       display: flex;
