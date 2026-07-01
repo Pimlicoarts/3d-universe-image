@@ -886,8 +886,8 @@ function injectGalleryCSS() {
       #closeWorksOverlay {
         top: 20px;
         right: 24px;
-        width: 90px;
-        height: 90px;
+        width: 240px;
+        height: 240px;
         font-size: 10px;
       }
     }
