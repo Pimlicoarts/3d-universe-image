@@ -864,9 +864,14 @@ function injectGalleryCSS() {
       outline: none;
       background: url('/images/Dot_10.PNG') center center / contain no-repeat;
       background-color: transparent;
-      color: transparent;
-      font-size: 0px;
+      color: black;
+      font-family: monospace;
+      font-size: 12px;
+      letter-spacing: 2px;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     #closeOverlay:hover,
     #closeAboutOverlay:hover,
