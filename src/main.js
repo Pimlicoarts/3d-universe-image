@@ -702,6 +702,7 @@ function showWorks(options = {}) {
         <button class="works-link" data-category="PHYSICAL">Physical</button>
         <button class="works-link" data-category="VIDEO">Videos</button>
         <button class="works-link" data-category="IMAGE">Images</button>
+        <button class="works-link" data-category="DECORATION">Decoration</button>
       </nav>
     </div>
   `
