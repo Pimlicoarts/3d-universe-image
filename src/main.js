@@ -433,7 +433,7 @@ window.addEventListener('click', (event) => {
     event.target.closest('#galleryOverlay') ||
     event.target.closest('#topMenu') ||
     event.target.closest('#leftLogo') ||
-    event.target.closest('#Permanently Under Construction') ||
+    event.target.closest('#underConstructionText') ||
     event.target.closest('#aboutOverlay') ||
     event.target.closest('#contactOverlay') ||
     event.target.closest('#worksOverlay')
@@ -851,7 +851,7 @@ function injectGalleryCSS() {
       z-index: 9500; opacity: 0.45; pointer-events: none; user-select: none;
     }
     #underConstructionText {
-      position: fixed; left: 50%; top: 20%; transform: translate(-50%);
+      position: fixed; left: 50%; bottom: 20%; transform: translate(-50%);
       z-index: 18000; font-family: 'FrutigerLight','FrutigerRoman',sans-serif;
       font-size: clamp(54px,11vw,190px); font-weight: 300; line-height: 0.82;
       letter-spacing: -0.08em; color: rgba(0,0,0,0.16); text-align: center;
