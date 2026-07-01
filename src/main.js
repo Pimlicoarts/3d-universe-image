@@ -844,7 +844,7 @@ function injectGalleryCSS() {
       white-space: nowrap; pointer-events: none; user-select: none;
     }
     #topMenu {
-      position: fixed; top: 10px; right: 0px; z-index: 19000;
+      position: fixed; top: 10px; right: 42px; z-index: 19000;
       display: flex; flex-direction: column; align-items: flex-end; gap: 10px;
     }
     #topMenu button {
@@ -909,7 +909,7 @@ function injectGalleryCSS() {
     @media (max-width: 768px) {
       #leftLogo { left: 18px; bottom: 18px; width: 52px; }
       #underConstructionText { font-size: 16vw; white-space: normal; width: 92vw; color: rgba(0,0,0,0.15); }
-      #topMenu { top: 20px; right: 24px; gap: 8px; }
+      #topMenu { top: 20px; right: 42px; gap: 8px; }
       #topMenu button { font-size: 10px; }
       .gallery-wrap { width: 94vw; padding: 82px 0 96px; }
       .gallery-header { margin-bottom: 50px; }
