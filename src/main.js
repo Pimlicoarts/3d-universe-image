@@ -256,7 +256,23 @@ Functioning both as a magnet and as a brooch, each circuit board is equipped wit
 During the exhibition, I had conversations with people from the United States, China, Israel, and Lebanon. Despite their different backgrounds, they all hoped for peace.`,
     year: '2026'
   },
+{
+    type: 'image',
+    path: '/physical/phy_07.jpg',
+    title: 'PHYSICAL 07',
+    category: 'PHYSICAL',
+    caption: '',
+    year: '2026'
+  },
 
+  {
+    type: 'image',
+    path: '/physical/phy_08.jpg',
+    title: 'PHYSICAL 08',
+    category: 'PHYSICAL',
+    caption: '',
+    year: '2026'
+  },
   {
     type: 'image',
     path: '/images/img_01.jpg',
