@@ -851,9 +851,9 @@ function injectGalleryCSS() {
       z-index: 9500; opacity: 0.45; pointer-events: none; user-select: none;
     }
     #underConstructionText {
-      position: fixed; left: 50%; bottom: 20%; transform: translate(-50%);
+      position: fixed; left: 50%; bottom: 5%; transform: translate(-50%);
       z-index: 18000; font-family: 'FrutigerLight','FrutigerRoman',sans-serif;
-      font-size: clamp(12px,2vw,20px); font-weight: 300; line-height: 0.82;
+      font-size: clamp(36px,6vw,60px); font-weight: 300; line-height: 0.82;
       letter-spacing: -0.08em; color: rgba(0,0,0,0.16); text-align: center;
       white-space: nowrap; pointer-events: none; user-select: none;
     }
