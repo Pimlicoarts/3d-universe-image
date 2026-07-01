@@ -860,11 +860,11 @@ function injectGalleryCSS() {
       top: 20px;
       right: 10px;
       z-index: 30000;
-      width: 200px;
-      height: 200px;
+      width: 80px;
+      height: 80px;
       border: none;
       outline: none;
-      background: url('/images/Dot_10.PNG') center center / contain no-repeat;
+      background: url(/images/Dot_10.PNG) center center / cover no-repeat;
       background-color: transparent;
       color: white;
       font-family: monospace;
