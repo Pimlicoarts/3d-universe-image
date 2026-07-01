@@ -860,8 +860,8 @@ function injectGalleryCSS() {
       top: 28px;
       right: 42px;
       z-index: 30000;
-      width: 300px;
-      height: 300px;
+      width: 400px;
+      height: 400px;
       border: none;
       outline: none;
       background: url('/images/Dot_10.PNG') center center / contain no-repeat;
