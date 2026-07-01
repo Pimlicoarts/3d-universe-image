@@ -521,9 +521,7 @@ function showAbout(options = {}) {
     </div>
   `
 
-  document.getElementById('closeAboutOverlay').addEventListener('click', () => {
-    history.back()
-  })
+  document.getElementById('closeAboutOverlay').addEventListener('click', () => { closeOverlay() })
 }
 
 function injectAboutCSS() {
@@ -626,7 +624,7 @@ function showContact(options = {}) {
     </div>
   `
 
-  document.getElementById('closeContactOverlay').addEventListener('click', () => { history.back() })
+  document.getElementById('closeContactOverlay').addEventListener('click', () => { closeOverlay() })
   document.getElementById('contactEmailLogo').addEventListener('click', () => {
     window.location.href = 'mailto:pimlicoarts@gmail.com'
   })
@@ -692,7 +690,7 @@ function showWorks(options = {}) {
     </div>
   `
 
-  document.getElementById('closeWorksOverlay').addEventListener('click', () => { history.back() })
+  document.getElementById('closeWorksOverlay').addEventListener('click', () => { closeOverlay() })
   overlay.querySelectorAll('.works-link').forEach((button) => {
     button.addEventListener('click', () => {
       showGallery(button.dataset.category, null, { pushHistory: true })
@@ -790,7 +788,7 @@ function showGallery(category, selectedPath, options = {}) {
     </section>
   `
 
-  document.getElementById('closeOverlay').addEventListener('click', () => { history.back() })
+  document.getElementById('closeOverlay').addEventListener('click', () => { closeOverlay() })
 
   const firstLoop = overlay.querySelector('.gallery-loop')
   const secondLoop = firstLoop ? firstLoop.nextElementSibling : null
