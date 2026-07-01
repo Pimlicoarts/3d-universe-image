@@ -922,7 +922,7 @@ function injectGalleryCSS() {
     .year { margin: 0; font-family: monospace; font-size: 12px; letter-spacing: 2px; color: #999; }
     @media (max-width: 768px) {
       #leftLogo { left: 18px; bottom: 18px; width: 52px; }
-      #underConstructionText { font-size: 16vw; white-space: normal; width: 92vw; color: rgba(0,0,0,0.15); }
+      #Permanently Under ConstructionText { font-size: 16vw; white-space: normal; width: 92vw; color: rgba(0,0,0,0.15); }
       #topMenu { top: 0px; right: 42px; gap: 8px; }
       #topMenu button { font-size: 10px; }
       .gallery-wrap { width: 94vw; padding: 82px 0 96px; }
