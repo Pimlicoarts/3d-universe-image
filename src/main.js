@@ -844,7 +844,7 @@ function injectGalleryCSS() {
       white-space: nowrap; pointer-events: none; user-select: none;
     }
     #topMenu {
-      position: fixed; top: 10px; right: 10px; z-index: 19000;
+      position: fixed; top: 10px; right: 0px; z-index: 19000;
       display: flex; flex-direction: column; align-items: flex-end; gap: 10px;
     }
     #topMenu button {
@@ -858,7 +858,7 @@ function injectGalleryCSS() {
     #closeWorksOverlay {
       position: fixed;
       top: 20px;
-      right: 10px;
+      right: 0px;
       z-index: 30000;
       width: 200px;
       height: 200px;
