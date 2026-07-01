@@ -866,7 +866,7 @@ function injectGalleryCSS() {
       background-color: transparent;
       color: black;
       font-family: monospace;
-      font-size: 18px;
+      font-size: 16px;
       letter-spacing: 2px;
       cursor: pointer;
       display: flex;
