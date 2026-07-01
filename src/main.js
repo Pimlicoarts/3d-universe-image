@@ -858,22 +858,17 @@ function injectGalleryCSS() {
     #closeWorksOverlay {
       position: fixed;
       top: 20px;
-      right: 0px;
+      right: 20px;
       z-index: 30000;
-      width: 200px;
-      height: 200px;
+      width: 60px;
+      height: 60px;
       border: none;
       outline: none;
-      background: url(/images/Dot_10.PNG) center center / cover no-repeat;
+      background: url('/images/Dot_10.PNG') center center / contain no-repeat;
       background-color: transparent;
-      color: white;
-      font-family: monospace;
-      font-size: 12px;
-      letter-spacing: 2px;
+      color: transparent;
+      font-size: 0px;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
     #closeOverlay:hover,
     #closeAboutOverlay:hover,
