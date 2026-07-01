@@ -844,7 +844,7 @@ function injectGalleryCSS() {
       white-space: nowrap; pointer-events: none; user-select: none;
     }
     #topMenu {
-      position: fixed; top: 28px; right: 42px; z-index: 19000;
+      position: fixed; top: 10px; right: 10px; z-index: 19000;
       display: flex; flex-direction: column; align-items: flex-end; gap: 10px;
     }
     #topMenu button {
