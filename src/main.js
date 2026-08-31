@@ -681,13 +681,6 @@ function injectAboutCSS() {
     }
 
     @media (max-width: 768px) {
-      #closeAboutOverlay {
-        top: 0px;
-        right: 24px;
-        padding: 10px 15px;
-        font-size: 10px;
-      }
-
       .about-inner {
         width: 88vw;
       }
@@ -994,10 +987,10 @@ function injectGalleryCSS() {
       #closeAboutOverlay,
       #closeContactOverlay,
       #closeWorksOverlay {
-        top: 0px;
-        right: 24px;
-        width: 120px;
-        height: 120px;
+        top: 20px;
+        right: 20px;
+        width: 44px;
+        height: 44px;
         font-size: 10px;
       }
     }
@@ -1015,9 +1008,9 @@ function injectGalleryCSS() {
     .caption { margin: 0 0 24px; font-family: monospace; font-size: 14px; line-height: 1.9; color: #ccc; white-space: pre-line; }
     .year { margin: 0; font-family: monospace; font-size: 12px; letter-spacing: 2px; color: #999; }
     @media (max-width: 768px) {
-      #leftLogo { left: 18px; bottom: 18px; width: 35px; height: 421px; }
+      #leftLogo { left: 16px; bottom: 16px; width: 16px; height: 195px; }
       #underConstructionText { font-size: 16vw; white-space: normal; width: 92vw; color: rgba(255,255,255,0.15); }
-      #topMenu { top: 0px; right: 42px; gap: 8px; }
+      #topMenu { top: 20px; right: 20px; gap: 8px; }
       #topMenu button { font-size: 10px; }
       .gallery-wrap { width: 94vw; padding: 82px 0 96px; }
       .gallery-header { margin-bottom: 50px; }
