@@ -488,6 +488,34 @@ for (let i = 0; i < CARD_COUNT; i++) {
 }
 
 // ======================================================
+// STARS (UNIVERSE BACKGROUND)
+// ======================================================
+
+const starCount = isMobile ? 900 : 2200
+const starGeometry = new THREE.BufferGeometry()
+const starPositions = new Float32Array(starCount * 3)
+
+for (let i = 0; i < starCount; i++) {
+  starPositions[i * 3]     = (Math.random() - 0.5) * 900
+  starPositions[i * 3 + 1] = (Math.random() - 0.5) * 900
+  starPositions[i * 3 + 2] = (Math.random() - 0.5) * 900
+}
+
+starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3))
+
+const starMaterial = new THREE.PointsMaterial({
+  color: 0xffffff,
+  size: isMobile ? 1.1 : 1.5,
+  sizeAttenuation: true,
+  transparent: true,
+  opacity: 0.85,
+  depthWrite: false
+})
+
+const stars = new THREE.Points(starGeometry, starMaterial)
+scene.add(stars)
+
+// ======================================================
 // CLICK
 // ======================================================
 
@@ -913,7 +941,7 @@ function injectGalleryCSS() {
   style.id = 'galleryStyle'
   style.innerHTML = `
     #leftLogo {
-      position: fixed; left: 28px; bottom: 28px; width: 96px; height: auto;
+      position: fixed; left: 28px; bottom: 28px; width: 69px; height: 842px;
       z-index: 9500; opacity: 0.45; pointer-events: none; user-select: none;
     }
     #underConstructionText {
@@ -987,7 +1015,7 @@ function injectGalleryCSS() {
     .caption { margin: 0 0 24px; font-family: monospace; font-size: 14px; line-height: 1.9; color: #ccc; white-space: pre-line; }
     .year { margin: 0; font-family: monospace; font-size: 12px; letter-spacing: 2px; color: #999; }
     @media (max-width: 768px) {
-      #leftLogo { left: 18px; bottom: 18px; width: 52px; }
+      #leftLogo { left: 18px; bottom: 18px; width: 35px; height: 421px; }
       #underConstructionText { font-size: 16vw; white-space: normal; width: 92vw; color: rgba(255,255,255,0.15); }
       #topMenu { top: 0px; right: 42px; gap: 8px; }
       #topMenu button { font-size: 10px; }
