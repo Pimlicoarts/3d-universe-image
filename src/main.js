@@ -475,6 +475,15 @@ During the exhibition, I had conversations with people from the United States, C
   },
 
   {
+    type: 'image',
+    path: '/images/img_09.jpg',
+    title: 'PLX DATA MATRIX 09',
+    category: 'IMAGE',
+    caption: '',
+    year: '2026'
+  },
+
+  {
     type: 'video',
     path: '/videos/vid_06.MP4',
     title: 'PLX DATA ARC MATRIX VIDEO',
