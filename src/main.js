@@ -275,6 +275,43 @@ During the exhibition, I had conversations with people from the United States, C
     caption: '',
     year: '2026'
   },
+
+  {
+    type: 'image',
+    path: '/physical/phy_09.jpg',
+    title: 'PHYSICAL 09',
+    category: 'PHYSICAL',
+    caption: '',
+    year: '2026'
+  },
+
+  {
+    type: 'image',
+    path: '/physical/phy_10.jpg',
+    title: 'PHYSICAL 10',
+    category: 'PHYSICAL',
+    caption: '',
+    year: '2026'
+  },
+
+  {
+    type: 'image',
+    path: '/physical/phy_11.jpg',
+    title: 'PHYSICAL 11',
+    category: 'PHYSICAL',
+    caption: '',
+    year: '2026'
+  },
+
+  {
+    type: 'image',
+    path: '/physical/phy_12.jpg',
+    title: 'PHYSICAL 12',
+    category: 'PHYSICAL',
+    caption: '',
+    year: '2026'
+  },
+
   {
     type: 'image',
     path: '/images/img_01.jpg',
@@ -353,6 +390,33 @@ During the exhibition, I had conversations with people from the United States, C
     title: 'PLX DATA ARC MATRIX VIDEO',
     category: 'VIDEO',
     caption: 'Moving image archive.',
+    year: '2026'
+  },
+
+  {
+    type: 'video',
+    path: '/videos/vid_07.MP4',
+    title: 'VIDEO 07',
+    category: 'VIDEO',
+    caption: '',
+    year: '2026'
+  },
+
+  {
+    type: 'video',
+    path: '/videos/vid_08.MP4',
+    title: 'VIDEO 08',
+    category: 'VIDEO',
+    caption: '',
+    year: '2026'
+  },
+
+  {
+    type: 'video',
+    path: '/videos/vid_09.MP4',
+    title: 'VIDEO 09',
+    category: 'VIDEO',
+    caption: '',
     year: '2026'
   }
 ]
@@ -924,7 +988,7 @@ function injectGalleryCSS() {
     .year { margin: 0; font-family: monospace; font-size: 12px; letter-spacing: 2px; color: #999; }
     @media (max-width: 768px) {
       #leftLogo { left: 18px; bottom: 18px; width: 52px; }
-      #Permanently Under ConstructionText { font-size: 16vw; white-space: normal; width: 92vw; color: rgba(0,0,0,0.15); }
+      #underConstructionText { font-size: 16vw; white-space: normal; width: 92vw; color: rgba(0,0,0,0.15); }
       #topMenu { top: 0px; right: 42px; gap: 8px; }
       #topMenu button { font-size: 10px; }
       .gallery-wrap { width: 94vw; padding: 82px 0 96px; }
