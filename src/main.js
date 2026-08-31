@@ -987,11 +987,11 @@ function injectGalleryCSS() {
       #closeAboutOverlay,
       #closeContactOverlay,
       #closeWorksOverlay {
-        top: 16px;
-        right: 12px;
-        width: 32px;
-        height: 32px;
-        font-size: 9px;
+        top: 14px;
+        right: 6px;
+        width: 24px;
+        height: 24px;
+        font-size: 8px;
       }
     }
     .gallery-wrap { width: min(1360px,94vw); margin: 0 auto; padding: 90px 0 110px; box-sizing: border-box; }
@@ -1009,8 +1009,8 @@ function injectGalleryCSS() {
     .year { margin: 0; font-family: monospace; font-size: 12px; letter-spacing: 2px; color: #999; }
     @media (max-width: 768px) {
       #leftLogo { left: 16px; bottom: 16px; width: 16px; height: 195px; }
-      #underConstructionText { font-size: 9vw; white-space: normal; width: 92vw; color: rgba(255,255,255,0.15); }
-      #topMenu { top: 20px; right: 12px; gap: 8px; }
+      #underConstructionText { font-size: 6vw; white-space: normal; width: 92vw; color: rgba(255,255,255,0.15); }
+      #topMenu { top: 20px; right: 6px; gap: 8px; }
       #topMenu button { font-size: 10px; }
       .gallery-wrap { width: 94vw; padding: 82px 0 96px; }
       .gallery-header { margin-bottom: 50px; }
