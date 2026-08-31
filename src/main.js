@@ -959,7 +959,7 @@ function injectGalleryCSS() {
     #closeWorksOverlay {
       position: fixed;
       top: 25px;
-      right: 25px;
+      right: 40px;
       z-index: 30000;
       width: 50px;
       height: 50px;
