@@ -51,7 +51,7 @@ const isMobile =
   /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
 
 const scene = new THREE.Scene()
-scene.background = new THREE.Color(0xffffff)
+scene.background = new THREE.Color(0x000000)
 
 const camera = new THREE.PerspectiveCamera(
   75,
@@ -75,7 +75,7 @@ renderer.setPixelRatio(
 
 document.body.style.margin = '0'
 document.body.style.overflow = 'hidden'
-document.body.style.background = 'white'
+document.body.style.background = 'black'
 
 document.body.appendChild(renderer.domElement)
 
@@ -620,7 +620,7 @@ function injectAboutCSS() {
       width: 100%;
       height: 100%;
       z-index: 20000;
-      background: #ffffff;
+      background: #000000;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -648,7 +648,7 @@ function injectAboutCSS() {
       font-size: clamp(28px, 4.5vw, 64px);
       line-height: 1.6;
       letter-spacing: 0.01em;
-      color: #000;
+      color: #fff;
       white-space: pre-line;
     }
 
@@ -719,7 +719,7 @@ function injectContactCSS() {
   style.innerHTML = `
     #contactOverlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      z-index: 20000; background: white; color: black;
+      z-index: 20000; background: black; color: white;
       display: flex; align-items: center; justify-content: center;
     }
     /* closeContactOverlay: 共通CSSに統合済み */
@@ -728,7 +728,7 @@ function injectContactCSS() {
     .contact-email {
       background: transparent; border: none; cursor: pointer; padding: 0;
       font-family: 'FrutigerBoldItalic', sans-serif; font-weight: 700; font-style: italic;
-      font-size: clamp(22px, 5vw, 56px); letter-spacing: -0.02em; color: black; transition: opacity 0.2s ease;
+      font-size: clamp(22px, 5vw, 56px); letter-spacing: -0.02em; color: white; transition: opacity 0.2s ease;
     }
     .contact-email:hover { opacity: 0.5; }
     @media (max-width: 768px) { .contact-email { font-size: 28px; word-break: break-all; } }
@@ -787,7 +787,7 @@ function injectWorksCSS() {
   style.innerHTML = `
     #worksOverlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      z-index: 20000; background: white; color: black;
+      z-index: 20000; background: black; color: white;
       display: flex; align-items: center; justify-content: center;
     }
     /* closeWorksOverlay: 共通CSSに統合済み */
@@ -799,7 +799,7 @@ function injectWorksCSS() {
       background: transparent; border: none; cursor: pointer; padding: 0;
       font-family: 'FrutigerLight', sans-serif; font-weight: 300;
       font-size: clamp(34px, 7vw, 90px); line-height: 0.95; letter-spacing: -0.04em;
-      color: black; transition: opacity 0.2s ease;
+      color: white; transition: opacity 0.2s ease;
     }
     .works-link:hover { opacity: 0.5; }
     @media (max-width: 768px) { .works-link { font-size: 48px; } .works-list { gap: 14px; } }
@@ -826,7 +826,7 @@ function showGallery(category, selectedPath, options = {}) {
 
   const overlay = document.createElement('div')
   overlay.id = 'galleryOverlay'
-  overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:20000;background:white;color:black;overflow-y:scroll;-webkit-overflow-scrolling:touch;visibility:hidden;'
+  overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:20000;background:black;color:white;overflow-y:scroll;-webkit-overflow-scrolling:touch;visibility:hidden;'
   document.body.appendChild(overlay)
 
   injectGalleryCSS()
@@ -920,7 +920,7 @@ function injectGalleryCSS() {
       position: fixed; left: 50%; bottom: 5%; transform: translate(-50%);
       z-index: 18000; font-family: 'FrutigerLight','FrutigerRoman',sans-serif;
       font-size: clamp(48px,8vw,80px); font-weight: 300; line-height: 0.82;
-      letter-spacing: -0.08em; color: rgba(0,0,0,0.16); text-align: center;
+      letter-spacing: -0.08em; color: rgba(255,255,255,0.16); text-align: center;
       white-space: nowrap; pointer-events: none; user-select: none;
     }
     #topMenu {
@@ -928,7 +928,7 @@ function injectGalleryCSS() {
       display: flex; flex-direction: column; align-items: flex-end; gap: 10px;
     }
     #topMenu button {
-      background: transparent; border: none; color: black; cursor: pointer; padding: 0;
+      background: transparent; border: none; color: white; cursor: pointer; padding: 0;
       font-size: 12px; letter-spacing: 1px; font-family: monospace; transition: opacity 0.2s ease;
     }
     #topMenu button:hover { opacity: 0.4; }
@@ -946,7 +946,7 @@ function injectGalleryCSS() {
       outline: none;
       background: url('/images/Dot_10.PNG') center center / contain no-repeat;
       background-color: transparent;
-      color: black;
+      color: white;
       font-family: monospace;
       font-size: 14px;
       letter-spacing: 2px;
@@ -979,16 +979,16 @@ function injectGalleryCSS() {
     .gallery-header h1 { margin: 0; font-family: 'FrutigerLight',sans-serif; font-size: clamp(64px,13vw,180px); line-height: 0.88; letter-spacing: -0.08em; font-weight: 300; }
     .gallery-list { display: flex; flex-direction: column; gap: 90px; }
     .gallery-loop { display: flex; flex-direction: column; gap: 90px; }
-    .gallery-card { display: grid; grid-template-columns: 1.45fr 0.55fr; gap: 34px; align-items: center; padding-bottom: 90px; border-bottom: 1px solid rgba(0,0,0,0.08); }
+    .gallery-card { display: grid; grid-template-columns: 1.45fr 0.55fr; gap: 34px; align-items: center; padding-bottom: 90px; border-bottom: 1px solid rgba(255,255,255,0.12); }
     .media-box { width: 100%; background: transparent; overflow: visible; }
     .media-box img, .media-box video { display: block; width: 100%; height: auto; max-height: 86vh; object-fit: contain; background: transparent; }
     .category-label { margin: 0 0 18px; font-family: monospace; font-size: 11px; letter-spacing: 3px; color: #888; }
     .text-box h2 { margin: 0 0 22px; font-family: 'FrutigerLight',sans-serif; font-size: clamp(34px,5vw,74px); line-height: 0.95; letter-spacing: -0.06em; font-weight: 300; }
-    .caption { margin: 0 0 24px; font-family: monospace; font-size: 14px; line-height: 1.9; color: #333; white-space: pre-line; }
+    .caption { margin: 0 0 24px; font-family: monospace; font-size: 14px; line-height: 1.9; color: #ccc; white-space: pre-line; }
     .year { margin: 0; font-family: monospace; font-size: 12px; letter-spacing: 2px; color: #999; }
     @media (max-width: 768px) {
       #leftLogo { left: 18px; bottom: 18px; width: 52px; }
-      #underConstructionText { font-size: 16vw; white-space: normal; width: 92vw; color: rgba(0,0,0,0.15); }
+      #underConstructionText { font-size: 16vw; white-space: normal; width: 92vw; color: rgba(255,255,255,0.15); }
       #topMenu { top: 0px; right: 42px; gap: 8px; }
       #topMenu button { font-size: 10px; }
       .gallery-wrap { width: 94vw; padding: 82px 0 96px; }
