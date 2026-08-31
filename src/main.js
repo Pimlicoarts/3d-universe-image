@@ -314,6 +314,96 @@ During the exhibition, I had conversations with people from the United States, C
 
   {
     type: 'image',
+    path: '/physical/phy_13.jpg',
+    title: 'PHYSICAL 13',
+    category: 'PHYSICAL',
+    caption: '',
+    year: '2026'
+  },
+
+  {
+    type: 'image',
+    path: '/physical/phy_14.jpg',
+    title: 'PHYSICAL 14',
+    category: 'PHYSICAL',
+    caption: '',
+    year: '2026'
+  },
+
+  {
+    type: 'image',
+    path: '/physical/phy_15.jpg',
+    title: 'PHYSICAL 15',
+    category: 'PHYSICAL',
+    caption: '',
+    year: '2026'
+  },
+
+  {
+    type: 'image',
+    path: '/physical/phy_16.jpg',
+    title: 'PHYSICAL 16',
+    category: 'PHYSICAL',
+    caption: '',
+    year: '2026'
+  },
+
+  {
+    type: 'image',
+    path: '/physical/phy_17.jpg',
+    title: 'PHYSICAL 17',
+    category: 'PHYSICAL',
+    caption: '',
+    year: '2026'
+  },
+
+  {
+    type: 'image',
+    path: '/physical/phy_18.jpg',
+    title: 'PHYSICAL 18',
+    category: 'PHYSICAL',
+    caption: '',
+    year: '2026'
+  },
+
+  {
+    type: 'image',
+    path: '/physical/phy_19.jpg',
+    title: 'PHYSICAL 19',
+    category: 'PHYSICAL',
+    caption: '',
+    year: '2026'
+  },
+
+  {
+    type: 'image',
+    path: '/physical/phy_20.jpg',
+    title: 'PHYSICAL 20',
+    category: 'PHYSICAL',
+    caption: '',
+    year: '2026'
+  },
+
+  {
+    type: 'image',
+    path: '/physical/phy_21.jpg',
+    title: 'PHYSICAL 21',
+    category: 'PHYSICAL',
+    caption: '',
+    year: '2026'
+  },
+
+  {
+    type: 'image',
+    path: '/physical/phy_22.jpg',
+    title: 'PHYSICAL 22',
+    category: 'PHYSICAL',
+    caption: '',
+    year: '2026'
+  },
+
+  {
+    type: 'image',
     path: '/images/img_01.jpg',
     title: 'PLX DATA MATRIX 01',
     category: 'IMAGE',
