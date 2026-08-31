@@ -988,7 +988,7 @@ function injectGalleryCSS() {
       #closeContactOverlay,
       #closeWorksOverlay {
         top: 14px;
-        right: 6px;
+        right: 16px;
         width: 24px;
         height: 24px;
         font-size: 8px;
