@@ -941,7 +941,7 @@ function injectGalleryCSS() {
   style.id = 'galleryStyle'
   style.innerHTML = `
     #leftLogo {
-      position: fixed; left: 28px; bottom: 28px; width: 69px; height: 842px;
+      position: fixed; left: 38px; bottom: 38px; width: 69px; height: 842px;
       z-index: 9500; opacity: 0.45; pointer-events: none; user-select: none;
     }
     #underConstructionText {
